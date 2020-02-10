@@ -28,26 +28,37 @@
 #define DIMMER_PWM_VALUE_MAX         256                     // настройки ШИМ, не вникал в них
 #define DIMMER_PWM_VALUE_MIN         35                      // это вообще не используется, бездумно передрал с предыдущей
 
+#define DIMMER_EFEKTA_BOARD_DBG      0                       // 1 - use on-board leds (debug mode), 0 - use gpio header (production mode)
+
 #define BULB_INIT_BASIC_APP_VERSION   01                                  /**< Version of the application software (1 byte). */
 #define BULB_INIT_BASIC_STACK_VERSION 10                                  /**< Version of the implementation of the ZigBee stack (1 byte). */
 #define BULB_INIT_BASIC_HW_VERSION    11                                  /**< Version of the hardware of the device (1 byte). */
 #define BULB_INIT_BASIC_MANUF_NAME    "mluvke"                            /**< Manufacturer name (32 bytes). */
-#define BULB_INIT_BASIC_MODEL_ID      "RGBW Dimmer 1.1"                   /**< Model number assigned by manufacturer (32-bytes long string). */
-#define BULB_INIT_BASIC_DATE_CODE     "20191020"                          /**< First 8 bytes specify the date of manufacturer of the device in ISO 8601 format (YYYYMMDD). The rest (8 bytes) are manufacturer specific. */
+#define BULB_INIT_BASIC_MODEL_ID      "RGBW Dimmer 1.2"                   /**< Model number assigned by manufacturer (32-bytes long string). */
+#define BULB_INIT_BASIC_DATE_CODE     "20200211"                          /**< First 8 bytes specify the date of manufacturer of the device in ISO 8601 format (YYYYMMDD). The rest (8 bytes) are manufacturer specific. */
 #define BULB_INIT_BASIC_POWER_SOURCE  ZB_ZCL_BASIC_POWER_SOURCE_DC_SOURCE /**< Type of power sources available for the device. For possible values see section 3.2.2.2.8 of ZCL specification. */
-#define BULB_INIT_BASIC_LOCATION_DESC "Office desk"                       /**< Describes the physical location of the device (16 bytes). May be modified during commisioning process. */
+#define BULB_INIT_BASIC_LOCATION_DESC "Bedroom"                           /**< Describes the physical location of the device (16 bytes). May be modified during commisioning process. */
 #define BULB_INIT_BASIC_PH_ENV        ZB_ZCL_BASIC_ENV_UNSPECIFIED        /**< Describes the type of physical environment. For possible values see section 3.2.2.2.10 of ZCL specification. */
 
 #define IDENTIFY_MODE_ENTER_BUTTON BSP_BOARD_BUTTON_0 // номер кнопки спаривания устройств в списке BUTTONS_LIST в файле описания платы
 #define ZIGBEE_NETWORK_STATE_LED   BSP_BOARD_LED_0    // номер светодиода состояния подключения в списке LEDS_LIST в файле описания платы
 
 // пины, используемые под каждый из 4 цветов.
-// LED2_Dx задаются в файле описания платы (mluvke_debug_breadboard.h в моём случае),
-// файл инклудится через дефайн CUSTOM_BOARD_INC в настройках проекта (+ дефайн BOARD_MLUVKE_DEBUG_BREADBOARD)
+// LED2_Dx задаются в файле описания платы (efekta_dev_board.h),
+// файл инклудится через дефайн CUSTOM_BOARD_INC в настройках проекта (+ дефайн BOARD_EFEKTA_MINI_DEV_BOARD)
+#if DIMMER_EFEKTA_BOARD_DBG
+#define DIMMER_CHANNEL_PIN_R LED2_R // pwm channel 0
+#define DIMMER_CHANNEL_PIN_G LED2_G // pwm channel 1
+#define DIMMER_CHANNEL_PIN_B LED2_B // pwm channel 2
+#define DIMMER_CHANNEL_PIN_W LED2_DW // pwm channel 3
+#define DIMMER_PWM_INVERSION 0
+#else // DIMMER_EFEKTA_BOARD_DBG
 #define DIMMER_CHANNEL_PIN_R LED2_DR // pwm channel 0
 #define DIMMER_CHANNEL_PIN_G LED2_DG // pwm channel 1
 #define DIMMER_CHANNEL_PIN_B LED2_DB // pwm channel 2
 #define DIMMER_CHANNEL_PIN_W LED2_DW // pwm channel 3
+#define DIMMER_PWM_INVERSION NRF_DRV_PWM_PIN_INVERTED
+#endif // DIMMER_EFEKTA_BOARD_DBG
 
 // настройки ШИМ, не вникал, т.к. работает само из коробки.
 static nrf_drv_pwm_t m_led_pwm = DIMMER_PWM_INSTANCE; // инстанс ШИМ
@@ -353,17 +364,18 @@ static void board_init(void)
         {
             .output_pins =
                 {
-                    DIMMER_CHANNEL_PIN_R, // channel 0
-                    DIMMER_CHANNEL_PIN_G, // channel 1
-                    DIMMER_CHANNEL_PIN_B, // channel 2
-                    DIMMER_CHANNEL_PIN_W, // channel 3
+                    DIMMER_CHANNEL_PIN_R | DIMMER_PWM_INVERSION, // channel 0
+                    DIMMER_CHANNEL_PIN_G | DIMMER_PWM_INVERSION, // channel 1
+                    DIMMER_CHANNEL_PIN_B | DIMMER_PWM_INVERSION, // channel 2
+                    DIMMER_CHANNEL_PIN_W | DIMMER_PWM_INVERSION, // channel 3
                 },
             .irq_priority = APP_IRQ_PRIORITY_LOWEST,
-            .base_clock = NRF_PWM_CLK_125kHz,
+            .base_clock = NRF_PWM_CLK_1MHz,
             .count_mode = NRF_PWM_MODE_UP,
             .top_value = DIMMER_PWM_VALUE_MAX,
             .load_mode = NRF_PWM_LOAD_INDIVIDUAL,
-            .step_mode = NRF_PWM_STEP_AUTO};
+            .step_mode = NRF_PWM_STEP_AUTO
+        };
 
     err_code = nrf_drv_pwm_init(&m_led_pwm, &led_pwm_config, NULL);
     APP_ERROR_CHECK(err_code);
@@ -392,12 +404,22 @@ static void dimmable_clusters_attr_init(bulb_device_ctx_t *p_dimmable_light_ctx)
 
     p_dimmable_light_ctx->identify_attr.identify_time = ZB_ZCL_IDENTIFY_IDENTIFY_TIME_DEFAULT_VALUE;
 
-    p_dimmable_light_ctx->on_off_attr.on_off = (zb_bool_t)ZB_ZCL_ON_OFF_IS_ON;
+    // белый цвет по дефолту включен, остальные выключены
+    if (p_dimmable_light_ctx->ep_id == HA_DIMMABLE_LIGHT_ENDPOINT_W)
+      p_dimmable_light_ctx->on_off_attr.on_off = (zb_bool_t)ZB_ZCL_ON_OFF_IS_ON;
+    else
+      p_dimmable_light_ctx->on_off_attr.on_off = (zb_bool_t)ZB_ZCL_ON_OFF_IS_OFF;
+
     p_dimmable_light_ctx->on_off_attr.global_scene_ctrl = ZB_TRUE;
     p_dimmable_light_ctx->on_off_attr.on_time = 0;
     p_dimmable_light_ctx->on_off_attr.off_wait_time = 0;
 
-    p_dimmable_light_ctx->level_control_attr.current_level = ZB_ZCL_LEVEL_CONTROL_LEVEL_MAX_VALUE;
+    // белый цвет по дефолту включен, остальные выключены
+    if (p_dimmable_light_ctx->ep_id == HA_DIMMABLE_LIGHT_ENDPOINT_W)
+      p_dimmable_light_ctx->level_control_attr.current_level = ZB_ZCL_LEVEL_CONTROL_LEVEL_MAX_VALUE;
+    else
+      p_dimmable_light_ctx->level_control_attr.current_level = ZB_ZCL_LEVEL_CONTROL_LEVEL_MIN_VALUE;
+
     p_dimmable_light_ctx->level_control_attr.remaining_time = ZB_ZCL_LEVEL_CONTROL_REMAINING_TIME_DEFAULT_VALUE;
 
     ZB_ZCL_SET_ATTRIBUTE(p_dimmable_light_ctx->ep_id, ZB_ZCL_CLUSTER_ID_ON_OFF, ZB_ZCL_CLUSTER_SERVER_ROLE, ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID, (zb_uint8_t *)&p_dimmable_light_ctx->on_off_attr.on_off, ZB_FALSE);
@@ -413,7 +435,9 @@ void zb_dimmable_light_init_ctx(bulb_device_ctx_t *p_dimmable_light_ctx, uint8_t
     p_dimmable_light_ctx->pwm_channel = pwm_channel;
 
     dimmable_clusters_attr_init(p_dimmable_light_ctx);
-    level_control_set_value(p_dimmable_light_ctx, ZB_ZCL_LEVEL_CONTROL_LEVEL_MAX_VALUE);
+
+    // FIXME: аттрибуты level и onoff ставятся внутри dimmable_clusters_attr_init, а тут еще раз перевыставляются
+    level_control_set_value(p_dimmable_light_ctx, p_dimmable_light_ctx->level_control_attr.current_level);
 }
 
 zb_void_t zb_osif_go_idle(zb_void_t)
@@ -504,6 +528,10 @@ void zboss_signal_handler(zb_uint8_t param)
     {
     case ZB_BDB_SIGNAL_DEVICE_FIRST_START:
     case ZB_BDB_SIGNAL_DEVICE_REBOOT:
+        if (sig == ZB_BDB_SIGNAL_DEVICE_FIRST_START)
+            NRF_LOG_INFO("ZB_BDB_SIGNAL_DEVICE_FIRST_START");
+        if (sig == ZB_BDB_SIGNAL_DEVICE_REBOOT)
+            NRF_LOG_INFO("ZB_BDB_SIGNAL_DEVICE_REBOOT");
         if (status == RET_OK)
         {
             NRF_LOG_INFO("Joined network successfully");
@@ -519,6 +547,7 @@ void zboss_signal_handler(zb_uint8_t param)
         break;
 
     case ZB_ZDO_SIGNAL_PRODUCTION_CONFIG_READY:
+        NRF_LOG_INFO("ZB_ZDO_SIGNAL_PRODUCTION_CONFIG_READY");
         if (status != RET_OK)
         {
             NRF_LOG_WARNING("Production config is not present or invalid");
@@ -539,6 +568,12 @@ void zboss_signal_handler(zb_uint8_t param)
         }
         break;
 
+    case ZB_ZDO_SIGNAL_ERROR:
+        NRF_LOG_INFO("ZB_ZDO_SIGNAL_ERROR: %d", status);
+        break;
+    case ZB_ZDO_SIGNAL_DEFAULT_START:
+        NRF_LOG_INFO("ZB_ZDO_SIGNAL_DEFAULT_START: %d", status);
+        break;
     case ZB_ZDO_SIGNAL_SKIP_STARTUP:
         NRF_LOG_INFO("ZB_ZDO_SIGNAL_SKIP_STARTUP: %d", status);
         break;
@@ -580,6 +615,16 @@ void zboss_signal_handler(zb_uint8_t param)
         break;
     case ZB_NWK_SIGNAL_NO_ACTIVE_LINKS_LEFT:
         NRF_LOG_INFO("ZB_NWK_SIGNAL_NO_ACTIVE_LINKS_LEFT: %d", status);
+        break;
+
+    case ZB_NWK_SIGNAL_DEVICE_ASSOCIATED:
+        NRF_LOG_INFO("ZB_NWK_SIGNAL_DEVICE_ASSOCIATED: %d", status);
+        break;
+    case ZB_ZDO_SIGNAL_DEVICE_UPDATE:
+        NRF_LOG_INFO("ZB_ZDO_SIGNAL_DEVICE_UPDATE: %d", status);
+        break;
+    case ZB_ZDO_SIGNAL_DEVICE_AUTHORIZED:
+        NRF_LOG_INFO("ZB_ZDO_SIGNAL_DEVICE_AUTHORIZED: %d", status);
         break;
 
     case ZB_COMMON_SIGNAL_CAN_SLEEP:
