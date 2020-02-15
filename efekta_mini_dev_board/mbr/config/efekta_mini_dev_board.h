@@ -1,5 +1,5 @@
-#ifndef EFFEKTA_DEV_BOARD_H
-#define EFFEKTA_DEV_BOARD_H
+#ifndef EFEKTA_DEV_BOARD_H
+#define EFEKTA_DEV_BOARD_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -7,7 +7,7 @@ extern "C" {
 
 #include "nrf_gpio.h"
 
-// LED definitions for EFFEKTA_DEV_BOARD_H
+// LED definitions for EFEKTA_DEV_BOARD_H
 // Each LED color is considered a separate LED
 #define LEDS_NUMBER    4
 
@@ -69,4 +69,4 @@ extern "C" {
 }
 #endif
 
-#endif // EFFEKTA_DEV_BOARD_H
+#endif // EFEKTA_DEV_BOARD_H

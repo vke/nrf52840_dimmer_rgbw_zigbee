@@ -2,7 +2,7 @@
 #include "zb_error_handler.h"
 #include "zb_ha_dimmable_light.h"
 #include "zb_mem_config_med.h"
-#include "zb_nrf52840_internal.h"
+#include "zb_nrf52_internal.h"
 #include "zboss_api.h"
 #include "zigbee_helpers.h"
 
@@ -33,15 +33,16 @@
 #define BULB_INIT_BASIC_APP_VERSION   01                                  /**< Version of the application software (1 byte). */
 #define BULB_INIT_BASIC_STACK_VERSION 10                                  /**< Version of the implementation of the ZigBee stack (1 byte). */
 #define BULB_INIT_BASIC_HW_VERSION    11                                  /**< Version of the hardware of the device (1 byte). */
-#define BULB_INIT_BASIC_MANUF_NAME    "mluvke"                            /**< Manufacturer name (32 bytes). */
+#define BULB_INIT_BASIC_MANUF_NAME    "vke"                               /**< Manufacturer name (32 bytes). */
 #define BULB_INIT_BASIC_MODEL_ID      "RGBW Dimmer 1.2"                   /**< Model number assigned by manufacturer (32-bytes long string). */
 #define BULB_INIT_BASIC_DATE_CODE     "20200211"                          /**< First 8 bytes specify the date of manufacturer of the device in ISO 8601 format (YYYYMMDD). The rest (8 bytes) are manufacturer specific. */
 #define BULB_INIT_BASIC_POWER_SOURCE  ZB_ZCL_BASIC_POWER_SOURCE_DC_SOURCE /**< Type of power sources available for the device. For possible values see section 3.2.2.2.8 of ZCL specification. */
 #define BULB_INIT_BASIC_LOCATION_DESC "Bedroom"                           /**< Describes the physical location of the device (16 bytes). May be modified during commisioning process. */
 #define BULB_INIT_BASIC_PH_ENV        ZB_ZCL_BASIC_ENV_UNSPECIFIED        /**< Describes the type of physical environment. For possible values see section 3.2.2.2.10 of ZCL specification. */
 
-#define IDENTIFY_MODE_ENTER_BUTTON BSP_BOARD_BUTTON_0 // номер кнопки спаривания устройств в списке BUTTONS_LIST в файле описания платы
-#define ZIGBEE_NETWORK_STATE_LED   BSP_BOARD_LED_0    // номер светодиода состояния подключения в списке LEDS_LIST в файле описания платы
+#define IDENTIFY_MODE_BSP_EVT       BSP_EVENT_KEY_0    //
+#define ZIGBEE_NETWORK_STATE_LED    BSP_BOARD_LED_0    // номер светодиода состояния подключения в списке LEDS_LIST в файле описания платы
+#define ERASE_PERSISTENT_CONFIG_PIN BSP_BUTTON_0       // кнопка очистки памяти, должна быть нажата при запуске платы для очистки памяти
 
 // пины, используемые под каждый из 4 цветов.
 // LED2_Dx задаются в файле описания платы (efekta_dev_board.h),
@@ -330,7 +331,7 @@ static void buttons_handler(bsp_event_t evt)
 
     switch (evt)
     {
-    case BSP_EVENT_KEY_0:
+    case IDENTIFY_MODE_BSP_EVT:
         if (m_dev_ctx_w.identify_attr.identify_time == ZB_ZCL_IDENTIFY_IDENTIFY_TIME_DEFAULT_VALUE)
         {
             NRF_LOG_INFO("Bulb put in identifying mode");
@@ -479,12 +480,11 @@ zb_ret_t zb_dimmer_light_set_attribute(bulb_device_ctx_t *p_dimmable_light_ctx, 
 }
 
 // обработчик событий, вызываемый при изменении аттрибутов ZCL у эндпоинтов
-static zb_void_t zcl_device_cb(zb_uint8_t param)
+static zb_void_t zcl_device_cb(zb_bufid_t bufid)
 {
     zb_uint8_t cluster_id;
     zb_uint8_t attr_id;
-    zb_buf_t *p_buffer = ZB_BUF_FROM_REF(param);
-    zb_zcl_device_callback_param_t *p_device_cb_param = ZB_GET_BUF_PARAM(p_buffer, zb_zcl_device_callback_param_t);
+    zb_zcl_device_callback_param_t *p_device_cb_param = ZB_BUF_GET_PARAM(bufid, zb_zcl_device_callback_param_t);
 
     NRF_LOG_INFO("Received ZCL callback %hd on endpoint %hu", p_device_cb_param->device_cb_id, p_device_cb_param->endpoint);
 
@@ -517,57 +517,30 @@ static zb_void_t zcl_device_cb(zb_uint8_t param)
 }
 
 // обработчик основных событий в стеке зигби - старт, стоп, наличие проблем и вот это вот всё.
-void zboss_signal_handler(zb_uint8_t param)
+void zboss_signal_handler(zb_bufid_t bufid)
 {
     zb_zdo_app_signal_hdr_t *p_sg_p = NULL;
-    zb_zdo_app_signal_type_t sig = zb_get_app_signal(param, &p_sg_p);
-    zb_ret_t status = ZB_GET_APP_SIGNAL_STATUS(param);
+    zb_zdo_app_signal_type_t sig = zb_get_app_signal(bufid, &p_sg_p);
+    zb_ret_t status = ZB_GET_APP_SIGNAL_STATUS(bufid);
     zb_bool_t comm_status;
 
     switch (sig)
     {
     case ZB_BDB_SIGNAL_DEVICE_FIRST_START:
+        NRF_LOG_INFO("ZB_BDB_SIGNAL_DEVICE_FIRST_START: %d", status);
+        break;
     case ZB_BDB_SIGNAL_DEVICE_REBOOT:
-        if (sig == ZB_BDB_SIGNAL_DEVICE_FIRST_START)
-            NRF_LOG_INFO("ZB_BDB_SIGNAL_DEVICE_FIRST_START");
-        if (sig == ZB_BDB_SIGNAL_DEVICE_REBOOT)
-            NRF_LOG_INFO("ZB_BDB_SIGNAL_DEVICE_REBOOT");
-        if (status == RET_OK)
-        {
-            NRF_LOG_INFO("Joined network successfully");
-            bsp_board_led_on(ZIGBEE_NETWORK_STATE_LED);
-        }
-        else
-        {
-            NRF_LOG_ERROR("Failed to join network. Status: %d", status);
-            bsp_board_led_off(ZIGBEE_NETWORK_STATE_LED);
-            comm_status = bdb_start_top_level_commissioning(ZB_BDB_NETWORK_STEERING);
-            ZB_COMM_STATUS_CHECK(comm_status);
-        }
+        NRF_LOG_INFO("ZB_BDB_SIGNAL_DEVICE_REBOOT: %d", status);
         break;
-
+    case ZB_COMMON_SIGNAL_CAN_SLEEP:
+        NRF_LOG_INFO("ZB_COMMON_SIGNAL_CAN_SLEEP: %d", status);
+        break;
     case ZB_ZDO_SIGNAL_PRODUCTION_CONFIG_READY:
-        NRF_LOG_INFO("ZB_ZDO_SIGNAL_PRODUCTION_CONFIG_READY");
-        if (status != RET_OK)
-        {
-            NRF_LOG_WARNING("Production config is not present or invalid");
-        }
+        NRF_LOG_INFO("ZB_ZDO_SIGNAL_PRODUCTION_CONFIG_READY: %d", status);
         break;
-
     case ZB_ZDO_SIGNAL_LEAVE:
-        if (status == RET_OK)
-        {
-            bsp_board_led_off(ZIGBEE_NETWORK_STATE_LED);
-
-            zb_zdo_signal_leave_params_t *p_leave_params = ZB_ZDO_SIGNAL_GET_PARAMS(p_sg_p, zb_zdo_signal_leave_params_t);
-            NRF_LOG_INFO("Network left. Leave type: %d", p_leave_params->leave_type);
-        }
-        else
-        {
-            NRF_LOG_ERROR("Unable to leave network. Status: %d", status);
-        }
+        NRF_LOG_INFO("ZB_ZDO_SIGNAL_LEAVE: %d", status);
         break;
-
     case ZB_ZDO_SIGNAL_ERROR:
         NRF_LOG_INFO("ZB_ZDO_SIGNAL_ERROR: %d", status);
         break;
@@ -579,15 +552,6 @@ void zboss_signal_handler(zb_uint8_t param)
         break;
     case ZB_ZDO_SIGNAL_DEVICE_ANNCE:
         NRF_LOG_INFO("ZB_ZDO_SIGNAL_DEVICE_ANNCE: %d", status);
-        break;
-    case ZB_BDB_SIGNAL_TOUCHLINK_NWK_JOINED_ROUTER:
-        NRF_LOG_INFO("ZB_BDB_SIGNAL_TOUCHLINK_NWK_JOINED_ROUTER: %d", status);
-        break;
-    case ZB_BDB_SIGNAL_TOUCHLINK_NWK_STARTED:
-        NRF_LOG_INFO("ZB_BDB_SIGNAL_TOUCHLINK_NWK_STARTED: %d", status);
-        break;
-    case ZB_BDB_SIGNAL_TOUCHLINK:
-        NRF_LOG_INFO("ZB_BDB_SIGNAL_TOUCHLINK: %d", status);
         break;
     case ZB_BDB_SIGNAL_STEERING:
         NRF_LOG_INFO("ZB_BDB_SIGNAL_STEERING: %d", status);
@@ -601,51 +565,69 @@ void zboss_signal_handler(zb_uint8_t param)
     case ZB_BDB_SIGNAL_FINDING_AND_BINDING_INITIATOR_FINISHED:
         NRF_LOG_INFO("ZB_BDB_SIGNAL_FINDING_AND_BINDING_INITIATOR_FINISHED: %d", status);
         break;
-    case ZB_BDB_SIGNAL_TOUCHLINK_TARGET:
-        NRF_LOG_INFO("ZB_BDB_SIGNAL_TOUCHLINK_TARGET: %d", status);
-        break;
-    case ZB_BDB_SIGNAL_TOUCHLINK_NWK:
-        NRF_LOG_INFO("ZB_BDB_SIGNAL_TOUCHLINK_NWK: %d", status);
-        break;
-    case ZB_ZDO_SIGNAL_LEAVE_INDICATION:
-        NRF_LOG_INFO("ZB_ZDO_SIGNAL_LEAVE_INDICATION: %d", status);
-        break;
     case ZB_ZGP_SIGNAL_COMMISSIONING:
         NRF_LOG_INFO("ZB_ZGP_SIGNAL_COMMISSIONING: %d", status);
         break;
     case ZB_NWK_SIGNAL_NO_ACTIVE_LINKS_LEFT:
         NRF_LOG_INFO("ZB_NWK_SIGNAL_NO_ACTIVE_LINKS_LEFT: %d", status);
         break;
-
+    case ZB_ZDO_SIGNAL_DEVICE_AUTHORIZED:
+        NRF_LOG_INFO("ZB_ZDO_SIGNAL_DEVICE_AUTHORIZED: %d", status);
+        break;
     case ZB_NWK_SIGNAL_DEVICE_ASSOCIATED:
         NRF_LOG_INFO("ZB_NWK_SIGNAL_DEVICE_ASSOCIATED: %d", status);
+        break;
+    case ZB_ZDO_SIGNAL_LEAVE_INDICATION:
+        NRF_LOG_INFO("ZB_ZDO_SIGNAL_LEAVE_INDICATION: %d", status);
+        break;
+    case ZB_BDB_SIGNAL_WWAH_REJOIN_STARTED:
+        NRF_LOG_INFO("ZB_BDB_SIGNAL_WWAH_REJOIN_STARTED: %d", status);
         break;
     case ZB_ZDO_SIGNAL_DEVICE_UPDATE:
         NRF_LOG_INFO("ZB_ZDO_SIGNAL_DEVICE_UPDATE: %d", status);
         break;
-    case ZB_ZDO_SIGNAL_DEVICE_AUTHORIZED:
-        NRF_LOG_INFO("ZB_ZDO_SIGNAL_DEVICE_AUTHORIZED: %d", status);
+    case ZB_NWK_SIGNAL_PANID_CONFLICT_DETECTED:
+        NRF_LOG_INFO("ZB_NWK_SIGNAL_PANID_CONFLICT_DETECTED: %d", status);
         break;
-
-    case ZB_COMMON_SIGNAL_CAN_SLEEP:
-        NRF_LOG_INFO("ZB_COMMON_SIGNAL_CAN_SLEEP: %d", status);
+    case ZB_NLME_STATUS_INDICATION:
+        NRF_LOG_INFO("ZB_NLME_STATUS_INDICATION: %d", status);
         break;
-
     default:
         NRF_LOG_INFO("Unhandled signal %d. Status: %d", sig, status);
         break;
     }
 
-    if (param)
-    {
-        ZB_FREE_BUF_BY_REF(param);
-    }
+    zigbee_led_status_update(bufid, ZIGBEE_NETWORK_STATE_LED);
+
+    // передача управления дефолтному обработчику сигналов
+    ZB_ERROR_CHECK(zigbee_default_signal_handler(bufid));
+    zb_buf_free(bufid);
+}
+
+// зажатая юзерская кнопка при (ре)старте приводит к полной амнезии
+zb_bool_t check_erase_persistent_storage()
+{
+    nrf_gpio_cfg_input(ERASE_PERSISTENT_CONFIG_PIN, NRF_GPIO_PIN_PULLUP);
+
+    volatile uint32_t pin_state;
+
+    for (int i = 0; i < 10; i++)
+        pin_state = nrf_gpio_pin_read(ERASE_PERSISTENT_CONFIG_PIN);
+
+    nrf_gpio_cfg_default(ERASE_PERSISTENT_CONFIG_PIN);
+
+    return (pin_state == 0) ? ZB_TRUE : ZB_FALSE;
 }
 
 int main(void)
 {
     zb_ret_t zb_err_code;
     zb_ieee_addr_t ieee_addr; // здесь будет длинный адрес ноды
+    zb_bool_t erase_persistent_storage;
+
+    erase_persistent_storage = ERASE_PERSISTENT_CONFIG;
+    if (erase_persistent_storage != ZB_TRUE)
+        erase_persistent_storage = check_erase_persistent_storage();
 
     timer_init(); // запускаем таймеры, без них ничего работать не будет :)
     log_init(); // инициализация движка логгирования (в последовательный порт в нашем случае)
@@ -662,7 +644,7 @@ int main(void)
 
     zb_set_network_router_role(IEEE_CHANNEL_MASK); // роутером будем
     zb_set_max_children(MAX_CHILDREN); // максимальное количество дочерних девайсов у роутера
-    zigbee_erase_persistent_storage(ERASE_PERSISTENT_CONFIG); // очищать или нет конфиг при старте
+    zigbee_erase_persistent_storage(erase_persistent_storage); // очищать или нет конфиг при старте
     zb_set_keepalive_timeout(ZB_MILLISECONDS_TO_BEACON_INTERVAL(3000));
 
     ZB_AF_REGISTER_DEVICE_CTX(&dimmable_light_ctx); // регистрируем список эндпоинтов в стеке
@@ -676,7 +658,7 @@ int main(void)
 
     nrf_802154_tx_power_set(8);
 
-    zb_err_code = zboss_start(); // запуск стека зигби
+    zb_err_code = zboss_start_no_autostart(); // запуск стека зигби
     ZB_ERROR_CHECK(zb_err_code);
 
     while (1) // вечный цикл, в котором крутится вся жизнь приложения

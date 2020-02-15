@@ -69,13 +69,13 @@
 // </h>
 //==========================================================
 
-// <h> zigbee_stack - ZBOSS ZigBee stack
+// <h> zigbee_stack - ZBOSS Zigbee stack
 
 //==========================================================
-// <o> ZIGBEE_CHANNEL - 802.15.4 channel used by ZigBee  <11-26>
+// <o> ZIGBEE_CHANNEL - 802.15.4 channel used by Zigbee  <11-26>
 
 
-// <i> 802.15.4 channel used by ZigBee. Defaults to 16.
+// <i> 802.15.4 channel used by Zigbee. Defaults to 16.
 
 #ifndef ZIGBEE_CHANNEL
 #define ZIGBEE_CHANNEL 11
@@ -116,7 +116,14 @@
 #define ZIGBEE_NVRAM_PAGE_COUNT 2
 #endif
 
-// <o> ZIGBEE_NVRAM_CONFIG_PAGE_COUNT - Number of Zigbee NVRAM configuration pages
+// <o> ZIGBEE_NVRAM_CONFIG_PAGE_SIZE - Size of logical Zigbee NVRAM production configuration page in bytes
+// <i> The size must be a multiply of physical page size
+
+#ifndef ZIGBEE_NVRAM_CONFIG_PAGE_SIZE
+#define ZIGBEE_NVRAM_CONFIG_PAGE_SIZE 4096
+#endif
+
+// <o> ZIGBEE_NVRAM_CONFIG_PAGE_COUNT - Number of Zigbee NVRAM production configuration pages
 #ifndef ZIGBEE_NVRAM_CONFIG_PAGE_COUNT
 #define ZIGBEE_NVRAM_CONFIG_PAGE_COUNT 1
 #endif
@@ -1826,6 +1833,13 @@
 #define NRF_SECTION_ITER_ENABLED 1
 #endif
 
+// <q> NRF_SORTLIST_ENABLED  - nrf_sortlist - Sorted list
+
+
+#ifndef NRF_SORTLIST_ENABLED
+#define NRF_SORTLIST_ENABLED 1
+#endif
+
 // <q> NRF_STRERROR_ENABLED  - nrf_strerror - Library for converting error code to string.
 
 
@@ -1868,6 +1882,13 @@
 
 #ifndef NRF_FPRINTF_FLAG_AUTOMATIC_CR_ON_LF_ENABLED
 #define NRF_FPRINTF_FLAG_AUTOMATIC_CR_ON_LF_ENABLED 1
+#endif
+
+// <q> NRF_FPRINTF_DOUBLE_ENABLED  - Enable IEEE-754 double precision formatting.
+
+
+#ifndef NRF_FPRINTF_DOUBLE_ENABLED
+#define NRF_FPRINTF_DOUBLE_ENABLED 0
 #endif
 
 // </h>
@@ -1915,7 +1936,7 @@
 // <e> NRF_LOG_BACKEND_UART_ENABLED - nrf_log_backend_uart - Log UART backend
 //==========================================================
 #ifndef NRF_LOG_BACKEND_UART_ENABLED
-#define NRF_LOG_BACKEND_UART_ENABLED 0
+#define NRF_LOG_BACKEND_UART_ENABLED 1
 #endif
 // <o> NRF_LOG_BACKEND_UART_TX_PIN - UART TX pin
 #ifndef NRF_LOG_BACKEND_UART_TX_PIN
@@ -1960,7 +1981,7 @@
 // <e> NRF_LOG_ENABLED - nrf_log - Logger
 //==========================================================
 #ifndef NRF_LOG_ENABLED
-#define NRF_LOG_ENABLED 0
+#define NRF_LOG_ENABLED 1
 #endif
 // <h> Log message pool - Configuration of log message pool
 
@@ -2051,6 +2072,17 @@
 #define NRF_LOG_FILTERS_ENABLED 1
 #endif
 
+// <q> NRF_LOG_NON_DEFFERED_CRITICAL_REGION_ENABLED  - Enable use of critical region for non deffered mode when flushing logs.
+
+
+// <i> When enabled NRF_LOG_FLUSH is called from critical section when non deffered mode is used.
+// <i> Log output will never be corrupted as access to the log backend is exclusive
+// <i> but system will spend significant amount of time in critical section
+
+#ifndef NRF_LOG_NON_DEFFERED_CRITICAL_REGION_ENABLED
+#define NRF_LOG_NON_DEFFERED_CRITICAL_REGION_ENABLED 0
+#endif
+
 // <o> NRF_LOG_STR_PUSH_BUFFER_SIZE  - Size of the buffer dedicated for strings stored using @ref NRF_LOG_PUSH.
 
 // <16=> 16
@@ -2082,7 +2114,7 @@
 // <e> NRF_LOG_USES_COLORS - If enabled then ANSI escape code for colors is prefixed to every string
 //==========================================================
 #ifndef NRF_LOG_USES_COLORS
-#define NRF_LOG_USES_COLORS 0
+#define NRF_LOG_USES_COLORS 1
 #endif
 // <o> NRF_LOG_COLOR_DEFAULT  - ANSI escape code prefix.
 
@@ -3397,6 +3429,73 @@
 // <h> nrf_log in nRF_Libraries
 
 //==========================================================
+// <e> APP_BUTTON_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef APP_BUTTON_CONFIG_LOG_ENABLED
+#define APP_BUTTON_CONFIG_LOG_ENABLED 0
+#endif
+// <o> APP_BUTTON_CONFIG_LOG_LEVEL  - Default Severity level
+
+// <0=> Off
+// <1=> Error
+// <2=> Warning
+// <3=> Info
+// <4=> Debug
+
+#ifndef APP_BUTTON_CONFIG_LOG_LEVEL
+#define APP_BUTTON_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> APP_BUTTON_CONFIG_INITIAL_LOG_LEVEL  - Initial severity level if dynamic filtering is enabled.
+
+
+// <i> If module generates a lot of logs, initial log level can
+// <i> be decreased to prevent flooding. Severity level can be
+// <i> increased on instance basis.
+// <0=> Off
+// <1=> Error
+// <2=> Warning
+// <3=> Info
+// <4=> Debug
+
+#ifndef APP_BUTTON_CONFIG_INITIAL_LOG_LEVEL
+#define APP_BUTTON_CONFIG_INITIAL_LOG_LEVEL 3
+#endif
+
+// <o> APP_BUTTON_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+
+// <0=> Default
+// <1=> Black
+// <2=> Red
+// <3=> Green
+// <4=> Yellow
+// <5=> Blue
+// <6=> Magenta
+// <7=> Cyan
+// <8=> White
+
+#ifndef APP_BUTTON_CONFIG_INFO_COLOR
+#define APP_BUTTON_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> APP_BUTTON_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+
+// <0=> Default
+// <1=> Black
+// <2=> Red
+// <3=> Green
+// <4=> Yellow
+// <5=> Blue
+// <6=> Magenta
+// <7=> Cyan
+// <8=> White
+
+#ifndef APP_BUTTON_CONFIG_DEBUG_COLOR
+#define APP_BUTTON_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
 // <e> APP_TIMER_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef APP_TIMER_CONFIG_LOG_ENABLED
@@ -4835,6 +4934,70 @@
 #ifndef NRF_LOG_STR_FORMATTER_TIMESTAMP_FORMAT_ENABLED
 #define NRF_LOG_STR_FORMATTER_TIMESTAMP_FORMAT_ENABLED 1
 #endif
+
+// </h>
+//==========================================================
+
+// <h> nRF_drv_radio_802_15_4
+
+//==========================================================
+// <h> nrf_fem_config - nRF 21540 FEM configuration options
+
+//==========================================================
+// <o> FEM_CONTROL_DEFAULT_PA_PIN - Pin number, controlling Power Amplifier of the FEM module
+#ifndef FEM_CONTROL_DEFAULT_PA_PIN
+#define FEM_CONTROL_DEFAULT_PA_PIN 22
+#endif
+
+// <o> FEM_CONTROL_DEFAULT_LNA_PIN - Pin number, controlling Low Noise Amplifier of the FEM module
+#ifndef FEM_CONTROL_DEFAULT_LNA_PIN
+#define FEM_CONTROL_DEFAULT_LNA_PIN 19
+#endif
+
+// <o> FEM_CONTROL_DEFAULT_PDN_PIN - Pin number, controlling Power Down pin of the FEM module
+#ifndef FEM_CONTROL_DEFAULT_PDN_PIN
+#define FEM_CONTROL_DEFAULT_PDN_PIN 23
+#endif
+
+// <o> FEM_CONTROL_DEFAULT_MODE_PIN - Pin number, selecting Mode of the FEM module
+#ifndef FEM_CONTROL_DEFAULT_MODE_PIN
+#define FEM_CONTROL_DEFAULT_MODE_PIN 17
+#endif
+
+// <o> FEM_CONTROL_DEFAULT_ANTSEL_PIN - Pin number, selecting Antenna output of the FEM module
+#ifndef FEM_CONTROL_DEFAULT_ANTSEL_PIN
+#define FEM_CONTROL_DEFAULT_ANTSEL_PIN 20
+#endif
+
+// <o> FEM_CONTROL_DEFAULT_MOSI_PIN - Pin number, attached to MOSI pin of the FEM module
+#ifndef FEM_CONTROL_DEFAULT_MOSI_PIN
+#define FEM_CONTROL_DEFAULT_MOSI_PIN 45
+#endif
+
+// <o> FEM_CONTROL_DEFAULT_MISO_PIN - Pin number, attached to MISO pin of the FEM module
+#ifndef FEM_CONTROL_DEFAULT_MISO_PIN
+#define FEM_CONTROL_DEFAULT_MISO_PIN 46
+#endif
+
+// <o> FEM_CONTROL_DEFAULT_CLK_PIN - Pin number, attached to CLK pin of the FEM module
+#ifndef FEM_CONTROL_DEFAULT_CLK_PIN
+#define FEM_CONTROL_DEFAULT_CLK_PIN 47
+#endif
+
+// <o> FEM_CONTROL_DEFAULT_CSN_PIN - Pin number, attached to CS pin of the FEM module
+#ifndef FEM_CONTROL_DEFAULT_CSN_PIN
+#define FEM_CONTROL_DEFAULT_CSN_PIN 21
+#endif
+
+// <q> FEM_CONTROL_DEFAULT_ENABLE  - Enables FEM control on GPIO pins by default
+
+
+#ifndef FEM_CONTROL_DEFAULT_ENABLE
+#define FEM_CONTROL_DEFAULT_ENABLE 0
+#endif
+
+// </h>
+//==========================================================
 
 // </h>
 //==========================================================
