@@ -104,17 +104,17 @@
 // LED2_Dx задаются в файле описания платы (efekta_dev_board.h),
 // файл инклудится через дефайн CUSTOM_BOARD_INC в настройках проекта (+ дефайн BOARD_EFEKTA_MINI_DEV_BOARD)
 #if DIMMER_EFEKTA_BOARD_DBG
-#define DIMMER_CHANNEL_PIN_R LED2_R // pwm channel 0
-#define DIMMER_CHANNEL_PIN_G LED2_G // pwm channel 1
-#define DIMMER_CHANNEL_PIN_B LED2_B // pwm channel 2
-#define DIMMER_CHANNEL_PIN_W LED2_DW // pwm channel 3
-#define DIMMER_PWM_INVERSION 0
+#define DIMMER_CHANNEL_PIN_R          LED2_R // pwm channel 0
+#define DIMMER_CHANNEL_PIN_G          LED2_G // pwm channel 1
+#define DIMMER_CHANNEL_PIN_B          LED2_B // pwm channel 2
+#define DIMMER_CHANNEL_PIN_W          LED2_DW // pwm channel 3
+#define DIMMER_PWM_INVERSION          0
 #else // DIMMER_EFEKTA_BOARD_DBG
-#define DIMMER_CHANNEL_PIN_R LED2_DR // pwm channel 0
-#define DIMMER_CHANNEL_PIN_G LED2_DG // pwm channel 1
-#define DIMMER_CHANNEL_PIN_B LED2_DB // pwm channel 2
-#define DIMMER_CHANNEL_PIN_W LED2_DW // pwm channel 3
-#define DIMMER_PWM_INVERSION NRF_DRV_PWM_PIN_INVERTED
+#define DIMMER_CHANNEL_PIN_R          LED2_DR // pwm channel 0
+#define DIMMER_CHANNEL_PIN_G          LED2_DG // pwm channel 1
+#define DIMMER_CHANNEL_PIN_B          LED2_DB // pwm channel 2
+#define DIMMER_CHANNEL_PIN_W          LED2_DW // pwm channel 3
+#define DIMMER_PWM_INVERSION          0
 #endif // DIMMER_EFEKTA_BOARD_DBG
 
 // настройки ШИМ, не вникал, т.к. работает само из коробки.

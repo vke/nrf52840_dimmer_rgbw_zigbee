@@ -16,11 +16,14 @@ extern "C" {
 #define LED2_G         NRF_GPIO_PIN_MAP(1,9)
 #define LED2_B         NRF_GPIO_PIN_MAP(0,12)
 
-// WGRB right upper side of board
-#define LED2_DW        NRF_GPIO_PIN_MAP(0,10)
-#define LED2_DG        NRF_GPIO_PIN_MAP(0,9)
-#define LED2_DR        NRF_GPIO_PIN_MAP(0,17)
-#define LED2_DB        NRF_GPIO_PIN_MAP(0,15)
+// rgbw dimmer daughter board
+#define LED2_DW        NRF_GPIO_PIN_MAP(0,31)
+#define LED2_DB        NRF_GPIO_PIN_MAP(0,30)
+#define LED2_DG        NRF_GPIO_PIN_MAP(0,29)
+#define LED2_DR        NRF_GPIO_PIN_MAP(0,26)
+
+#define PSU_12V_SENSE_PIN NRF_GPIO_PIN_MAP(0,28)
+#define PSU_ENABLE_PIN    NRF_GPIO_PIN_MAP(0,2)
 
 #define LED_1          LED1_B
 #define LED_2          LED2_R
