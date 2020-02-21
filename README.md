@@ -9,6 +9,7 @@
 * click on Build => Build nrf52840_dimmer_rgbw_mbr menu item inside SES to build project
 * hex files for manual firmware download will be available at `\examples\zigbee\vke\nrf52840_dimmer_rgbw\efekta_mini_dev_board\mbr\ses\Output` subdirectories depending on Release/Debug setting and so on
 * if you have J-Link connected you can simply click on Build => Build and run or Build => Build and debug menu items.
+* please be careful - the project is not yet complete and may contain serious bugs.
 
 
 # Что нужно сделать, чтобы скомпилировать и запустить пример:
@@ -20,3 +21,4 @@
 * нажать на Build => Build nrf52840_dimmer_rgbw_mbr в меню SES для сборки проекта
 * hex-файлы для самостоятельной прошивки будут доступны в директории `\examples\zigbee\vke\nrf52840_dimmer_rgbw\efekta_mini_dev_board\mbr\ses\Output` в поддиректориях, соответствующих конфигурации (Release/Debug)
 * если подключен дебаггер J-Link, то достаточно нажать в меню на Build => Build and run или Build => Build and debug, чтобы запустить прошивку
+* пожалуйста, будьте осторожны - проект еще закончен и может содержать серьёзные ошибки.
