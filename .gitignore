@@ -2,3 +2,6 @@ efekta_mini_dev_board/mbr/ses/Output
 .vscode/*.*
 *.emSession
 *.jlink
+ota/*.zigbee
+ota/*.zip
+ota/*.pem

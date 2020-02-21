@@ -1,10 +1,54 @@
-﻿#include "sdk_config.h"
+﻿/**
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form, except as embedded into a Nordic
+ *    Semiconductor ASA integrated circuit in a product or a software update for
+ *    such product, must reproduce the above copyright notice, this list of
+ *    conditions and the following disclaimer in the documentation and/or other
+ *    materials provided with the distribution.
+ *
+ * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
+ *    contributors may be used to endorse or promote products derived from this
+ *    software without specific prior written permission.
+ *
+ * 4. This software, with or without modification, must only be used with a
+ *    Nordic Semiconductor ASA integrated circuit.
+ *
+ * 5. Any software provided in binary form under this license must not be reverse
+ *    engineered, decompiled, modified and/or disassembled.
+ *
+ * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+#include "sdk_config.h"
 #include "zb_error_handler.h"
 #include "zb_ha_dimmable_light.h"
 #include "zb_mem_config_med.h"
 #include "zb_nrf52_internal.h"
 #include "zboss_api.h"
+#include "zboss_api_addons.h"
 #include "zigbee_helpers.h"
+
+#include "zigbee_dfu_transport.h"
+#include "nrf_dfu_settings.h"
 
 #include "zboss_api_af_addons.h"
 
@@ -17,18 +61,21 @@
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 
-#define MAX_CHILDREN                 10                      // максимальное количество подключенных дочерних девайсов (для роутера)
-#define IEEE_CHANNEL_MASK            (1l << ZIGBEE_CHANNEL)  // используемые каналы
-#define HA_DIMMABLE_LIGHT_ENDPOINT_R 10                      // 4 эндпоинта для раздельного управления каждым из 4 цветов
-#define HA_DIMMABLE_LIGHT_ENDPOINT_G 11                      //
-#define HA_DIMMABLE_LIGHT_ENDPOINT_B 12                      //
-#define HA_DIMMABLE_LIGHT_ENDPOINT_W 13                      //
-#define ERASE_PERSISTENT_CONFIG      ZB_FALSE                // если установить в TRUE, то девайс будет с каждым включением всё забывать и спариваться заново.
-#define DIMMER_PWM_INSTANCE          NRF_DRV_PWM_INSTANCE(0) // инстанс ШИМ, используемый девайсом
-#define DIMMER_PWM_VALUE_MAX         256                     // настройки ШИМ, не вникал в них
-#define DIMMER_PWM_VALUE_MIN         35                      // это вообще не используется, бездумно передрал с предыдущей
+#include "ota_upgrade_client.h"
 
-#define DIMMER_EFEKTA_BOARD_DBG      0                       // 1 - use on-board leds (debug mode), 0 - use gpio header (production mode)
+#define MAX_CHILDREN                  10                      // максимальное количество подключенных дочерних девайсов (для роутера)
+#define IEEE_CHANNEL_MASK             (1l << ZIGBEE_CHANNEL)  // используемые каналы
+#define HA_DIMMABLE_LIGHT_ENDPOINT_R  10                      // 4 эндпоинта для раздельного управления каждым из 4 цветов
+#define HA_DIMMABLE_LIGHT_ENDPOINT_G  11                      //
+#define HA_DIMMABLE_LIGHT_ENDPOINT_B  12                      //
+#define HA_DIMMABLE_LIGHT_ENDPOINT_W  13                      //
+#define OTA_ENDPOINT                  14                      // эндпоинт под обновление по воздуху
+#define ERASE_PERSISTENT_CONFIG       ZB_FALSE                // если установить в TRUE, то девайс будет с каждым включением всё забывать и спариваться заново.
+#define DIMMER_PWM_INSTANCE           NRF_DRV_PWM_INSTANCE(0) // инстанс ШИМ, используемый девайсом
+#define DIMMER_PWM_VALUE_MAX          256                     // настройки ШИМ, не вникал в них
+#define DIMMER_PWM_VALUE_MIN          35                      // это вообще не используется, бездумно передрал с предыдущей
+
+#define DIMMER_EFEKTA_BOARD_DBG       0                       // 1 - use on-board leds (debug mode), 0 - use gpio header (production mode)
 
 #define BULB_INIT_BASIC_APP_VERSION   01                                  /**< Version of the application software (1 byte). */
 #define BULB_INIT_BASIC_STACK_VERSION 10                                  /**< Version of the implementation of the ZigBee stack (1 byte). */
@@ -40,9 +87,18 @@
 #define BULB_INIT_BASIC_LOCATION_DESC "Bedroom"                           /**< Describes the physical location of the device (16 bytes). May be modified during commisioning process. */
 #define BULB_INIT_BASIC_PH_ENV        ZB_ZCL_BASIC_ENV_UNSPECIFIED        /**< Describes the type of physical environment. For possible values see section 3.2.2.2.10 of ZCL specification. */
 
-#define IDENTIFY_MODE_BSP_EVT       BSP_EVENT_KEY_0    //
-#define ZIGBEE_NETWORK_STATE_LED    BSP_BOARD_LED_0    // номер светодиода состояния подключения в списке LEDS_LIST в файле описания платы
-#define ERASE_PERSISTENT_CONFIG_PIN BSP_BUTTON_0       // кнопка очистки памяти, должна быть нажата при запуске платы для очистки памяти
+#define IDENTIFY_MODE_BSP_EVT         BSP_EVENT_KEY_0    //
+#define ZIGBEE_NETWORK_STATE_LED      BSP_BOARD_LED_0    // номер светодиода состояния подключения в списке LEDS_LIST в файле описания платы
+#define ERASE_PERSISTENT_CONFIG_PIN   BSP_BUTTON_0       // кнопка очистки памяти, должна быть нажата при запуске платы для очистки памяти
+#define OTA_ACTVITY_LED               BSP_BOARD_LED_1    // светодиод активности обновления по воздуху
+
+#define OTA_UPGRADE_TEST_MANUFACTURER 123
+#define OTA_UPGRADE_TEST_IMAGE_TYPE   321
+#define OTA_UPGRADE_TEST_DATA_SIZE    BACKGROUND_DFU_DEFAULT_BLOCK_SIZE
+
+#if (NRF_DFU_HW_VERSION > 0xFFFFUL)
+#error Incorrect Hardware Version value in NRF_DFU_HW_VERSION
+#endif
 
 // пины, используемые под каждый из 4 цветов.
 // LED2_Dx задаются в файле описания платы (efekta_dev_board.h),
@@ -193,6 +249,65 @@ static bulb_device_ctx_t m_dev_ctx_g;
 static bulb_device_ctx_t m_dev_ctx_b;
 static bulb_device_ctx_t m_dev_ctx_w;
 
+// OTA upgrade client structs
+typedef struct
+{
+    zb_uint8_t zcl_version;
+    zb_uint8_t power_source;
+} ota_client_basic_attr_t;
+
+typedef struct
+{
+    zb_ieee_addr_t upgrade_server;
+    zb_uint32_t    file_offset;
+    zb_uint32_t    file_version;
+    zb_uint16_t    stack_version;
+    zb_uint32_t    downloaded_file_ver;
+    zb_uint32_t    downloaded_stack_ver;
+    zb_uint8_t     image_status;
+    zb_uint16_t    manufacturer;
+    zb_uint16_t    image_type;
+    zb_uint16_t    min_block_reque;
+    zb_uint16_t    image_stamp;
+    zb_uint16_t    server_addr;
+    zb_uint8_t     server_ep;
+} ota_client_ota_upgrade_attr_t;
+
+typedef struct
+{
+    ota_client_basic_attr_t       basic_attr;
+    ota_client_ota_upgrade_attr_t ota_attr;
+} ota_client_ctx_t;
+
+APP_TIMER_DEF(m_ota_server_discovery_timer);
+static zb_zcl_ota_upgrade_client_periodical_discovery_ctx_t m_discovery_ctx;
+
+static ota_client_ctx_t m_ota_client_ctx;
+
+/* Basic cluster attributes data */
+ZB_ZCL_DECLARE_BASIC_ATTRIB_LIST(basic_attr_list,
+                                 &m_ota_client_ctx.basic_attr.zcl_version,
+                                 &m_ota_client_ctx.basic_attr.power_source);
+
+/* OTA cluster attributes data */
+ZB_ZCL_DECLARE_OTA_UPGRADE_ATTRIB_LIST(ota_upgrade_attr_list,
+                                       m_ota_client_ctx.ota_attr.upgrade_server,
+                                       &m_ota_client_ctx.ota_attr.file_offset,
+                                       &m_ota_client_ctx.ota_attr.file_version,
+                                       &m_ota_client_ctx.ota_attr.stack_version,
+                                       &m_ota_client_ctx.ota_attr.downloaded_file_ver,
+                                       &m_ota_client_ctx.ota_attr.downloaded_stack_ver,
+                                       &m_ota_client_ctx.ota_attr.image_status,
+                                       &m_ota_client_ctx.ota_attr.manufacturer,
+                                       &m_ota_client_ctx.ota_attr.image_type,
+                                       &m_ota_client_ctx.ota_attr.min_block_reque,
+                                       &m_ota_client_ctx.ota_attr.image_stamp,
+                                       &m_ota_client_ctx.ota_attr.server_addr,
+                                       &m_ota_client_ctx.ota_attr.server_ep,
+                                       (uint16_t)NRF_DFU_HW_VERSION,
+                                       OTA_UPGRADE_TEST_DATA_SIZE,
+                                       ZB_ZCL_OTA_UPGRADE_QUERY_TIMER_COUNT_DEF);
+
 // макрос, который описывает поддерживаемые эндпоинтом кластеры для управления им.
 #define ZB_DECLARE_DIMMABLE_CONTROL_CLUSTER_LIST(dev_ctx_name, dimmable_light_bulb_cluster_list) \
     ZB_ZCL_DECLARE_IDENTIFY_ATTRIB_LIST(dev_ctx_name##_identify_attr_list,                       \
@@ -239,14 +354,18 @@ ZB_DECLARE_DIMMABLE_CONTROL_CLUSTER_LIST(m_dev_ctx_g, m_dev_clusters_g);
 ZB_DECLARE_DIMMABLE_CONTROL_CLUSTER_LIST(m_dev_ctx_b, m_dev_clusters_b);
 ZB_DECLARE_DIMMABLE_CONTROL_CLUSTER_LIST(m_dev_ctx_w, m_dev_clusters_w);
 
+ZB_HA_DECLARE_OTA_UPGRADE_CLIENT_CLUSTER_LIST(ota_upgrade_client_clusters, basic_attr_list, ota_upgrade_attr_list);
+
 // создаём 4 эндпоинта, указываем для них айди и кластеры
 ZB_HA_DECLARE_LIGHT_EP(dimmable_light_ep_r, HA_DIMMABLE_LIGHT_ENDPOINT_R, m_dev_clusters_r);
 ZB_HA_DECLARE_LIGHT_EP(dimmable_light_ep_g, HA_DIMMABLE_LIGHT_ENDPOINT_G, m_dev_clusters_g);
 ZB_HA_DECLARE_LIGHT_EP(dimmable_light_ep_b, HA_DIMMABLE_LIGHT_ENDPOINT_B, m_dev_clusters_b);
 ZB_HA_DECLARE_LIGHT_EP(dimmable_light_ep_w, HA_DIMMABLE_LIGHT_ENDPOINT_W, m_dev_clusters_w);
 
+ZB_HA_DECLARE_OTA_UPGRADE_CLIENT_EP(ota_upgrade_client_ep, OTA_ENDPOINT, ota_upgrade_client_clusters);
+
 // полный список эндпоинтов, dimmable_light_ctx используется в ZB_AF_REGISTER_DEVICE_CTX() для регистрации
-ZBOSS_DECLARE_DEVICE_CTX_EP_VA(dimmable_light_ctx, &dimmable_light_ep_r, &dimmable_light_ep_g, &dimmable_light_ep_b, &dimmable_light_ep_w);
+ZBOSS_DECLARE_DEVICE_CTX_EP_VA(dimmable_light_ctx, &dimmable_light_ep_r, &dimmable_light_ep_g, &dimmable_light_ep_b, &dimmable_light_ep_w, &ota_upgrade_client_ep);
 
 // поиск контекста эндпоинта (где все настройки и состояние) по его айди. Эндпоинты с 10 по 13 для каждого цвета соответственно
 bulb_device_ctx_t *find_ctx_by_ep_id(zb_uint8_t ep)
@@ -276,6 +395,48 @@ static void log_init(void)
     APP_ERROR_CHECK(err_code);
 
     NRF_LOG_DEFAULT_BACKENDS_INIT();
+}
+
+/**@brief Function for initializing all clusters attributes.
+ *
+ * @note This function shall be called after the dfu initialization.
+ */
+static void ota_client_attr_init(void)
+{
+    /* Basic cluster attributes data */
+    m_ota_client_ctx.basic_attr.zcl_version = ZB_ZCL_VERSION;
+    m_ota_client_ctx.basic_attr.power_source = BULB_INIT_BASIC_POWER_SOURCE;
+
+    /* OTA cluster attributes data */
+    zb_ieee_addr_t addr = ZB_ZCL_OTA_UPGRADE_SERVER_DEF_VALUE;
+    ZB_MEMCPY(m_ota_client_ctx.ota_attr.upgrade_server, addr, sizeof(zb_ieee_addr_t));
+    m_ota_client_ctx.ota_attr.file_offset = ZB_ZCL_OTA_UPGRADE_FILE_OFFSET_DEF_VALUE;
+    m_ota_client_ctx.ota_attr.file_version = s_dfu_settings.app_version;
+    m_ota_client_ctx.ota_attr.stack_version = ZB_ZCL_OTA_UPGRADE_FILE_HEADER_STACK_PRO;
+    m_ota_client_ctx.ota_attr.downloaded_file_ver = ZB_ZCL_OTA_UPGRADE_DOWNLOADED_FILE_VERSION_DEF_VALUE;
+    m_ota_client_ctx.ota_attr.downloaded_stack_ver = ZB_ZCL_OTA_UPGRADE_DOWNLOADED_STACK_DEF_VALUE;
+    m_ota_client_ctx.ota_attr.image_status = ZB_ZCL_OTA_UPGRADE_IMAGE_STATUS_DEF_VALUE;
+    m_ota_client_ctx.ota_attr.manufacturer = OTA_UPGRADE_TEST_MANUFACTURER;
+    m_ota_client_ctx.ota_attr.image_type = OTA_UPGRADE_TEST_IMAGE_TYPE;
+    m_ota_client_ctx.ota_attr.min_block_reque = 0;
+    m_ota_client_ctx.ota_attr.image_stamp = ZB_ZCL_OTA_UPGRADE_IMAGE_STAMP_MIN_VALUE;
+}
+
+/** @brief Code for rebooting the chip
+ *
+ *  @param param Unused
+ */
+static void reboot_application(zb_uint8_t param)
+{
+    UNUSED_VARIABLE(param);
+    NRF_LOG_FINAL_FLUSH();
+
+#if NRF_MODULE_ENABLED(NRF_LOG_BACKEND_RTT)
+    // To allow the buffer to be flushed by the host.
+    nrf_delay_ms(100);
+#endif
+
+    NVIC_SystemReset();
 }
 
 // функция прописывает яркость эндпоинта в нужном канале ШИМ
@@ -488,25 +649,106 @@ static zb_void_t zcl_device_cb(zb_bufid_t bufid)
 
     NRF_LOG_INFO("Received ZCL callback %hd on endpoint %hu", p_device_cb_param->device_cb_id, p_device_cb_param->endpoint);
 
-    bulb_device_ctx_t *p_dimmable_light_ctx = find_ctx_by_ep_id(p_device_cb_param->endpoint);
-    if (!p_dimmable_light_ctx)
-    {
-        NRF_LOG_WARNING("Context for endpoint %hu not found", p_device_cb_param->endpoint);
-        return;
-    }
-
     p_device_cb_param->status = RET_OK;
 
     switch (p_device_cb_param->device_cb_id)
     {
     case ZB_ZCL_LEVEL_CONTROL_SET_VALUE_CB_ID:
-        NRF_LOG_INFO("Level control setting to %d", p_device_cb_param->cb_param.level_control_set_value_param.new_value);
-        level_control_set_value(p_dimmable_light_ctx, p_device_cb_param->cb_param.level_control_set_value_param.new_value);
+        {
+            NRF_LOG_INFO("Level control setting to %d", p_device_cb_param->cb_param.level_control_set_value_param.new_value);
+            bulb_device_ctx_t *p_dimmable_light_ctx = find_ctx_by_ep_id(p_device_cb_param->endpoint);
+            if (p_dimmable_light_ctx)
+            {
+                level_control_set_value(p_dimmable_light_ctx, p_device_cb_param->cb_param.level_control_set_value_param.new_value);
+            }
+            else
+            {
+                NRF_LOG_WARNING("Context for endpoint %hu not found", p_device_cb_param->endpoint);
+                p_device_cb_param->status = RET_ERROR;
+            }
+        }
+
         break;
 
     case ZB_ZCL_SET_ATTR_VALUE_CB_ID:
-        zb_dimmer_light_set_attribute(p_dimmable_light_ctx, &p_device_cb_param->cb_param.set_attr_value_param);
+        {
+            bulb_device_ctx_t *p_dimmable_light_ctx = find_ctx_by_ep_id(p_device_cb_param->endpoint);
+            if (p_dimmable_light_ctx)
+            {
+                zb_dimmer_light_set_attribute(p_dimmable_light_ctx, &p_device_cb_param->cb_param.set_attr_value_param);
+            }
+            else
+            {
+                NRF_LOG_WARNING("Context for endpoint %hu not found", p_device_cb_param->endpoint);
+                p_device_cb_param->status = RET_ERROR;
+            }
+        }
         break;
+
+        case ZB_ZCL_OTA_UPGRADE_VALUE_CB_ID:
+        {
+            zb_zcl_ota_upgrade_value_param_t *p_ota_upgrade_value = &(p_device_cb_param->cb_param.ota_value_param);
+
+            switch (p_ota_upgrade_value->upgrade_status)
+            {
+            case ZB_ZCL_OTA_UPGRADE_STATUS_START:
+                /* Check if OTA client is in the middle of image download.
+               If so, silently ignore the second QueryNextImageResponse packet from OTA server. */
+                if (zb_zcl_ota_upgrade_get_ota_status(p_device_cb_param->endpoint) != ZB_ZCL_OTA_UPGRADE_IMAGE_STATUS_NORMAL)
+                {
+                    p_ota_upgrade_value->upgrade_status = ZB_ZCL_OTA_UPGRADE_STATUS_BUSY;
+                }
+
+                /* Check if we're not downgrading.
+               If we do, let's politely say no since we do not support that. */
+                else if (p_ota_upgrade_value->upgrade.start.file_version > m_ota_client_ctx.ota_attr.file_version)
+                {
+                    p_ota_upgrade_value->upgrade_status = ZB_ZCL_OTA_UPGRADE_STATUS_OK;
+                }
+                else
+                {
+                    p_ota_upgrade_value->upgrade_status = ZB_ZCL_OTA_UPGRADE_STATUS_ABORT;
+                }
+                break;
+
+            case ZB_ZCL_OTA_UPGRADE_STATUS_RECEIVE:
+                /* Process image block. */
+                p_ota_upgrade_value->upgrade_status = zb_process_chunk(p_ota_upgrade_value, bufid);
+                bsp_board_led_invert(OTA_ACTVITY_LED);
+                break;
+
+            case ZB_ZCL_OTA_UPGRADE_STATUS_CHECK:
+                p_ota_upgrade_value->upgrade_status = ZB_ZCL_OTA_UPGRADE_STATUS_OK;
+                break;
+
+            case ZB_ZCL_OTA_UPGRADE_STATUS_APPLY:
+                bsp_board_led_on(OTA_ACTVITY_LED);
+                p_ota_upgrade_value->upgrade_status = ZB_ZCL_OTA_UPGRADE_STATUS_OK;
+                break;
+
+            case ZB_ZCL_OTA_UPGRADE_STATUS_FINISH:
+                /* It is time to upgrade FW. */
+                /* We use callback so the stack can have time to i.e. send response etc */
+                UNUSED_RETURN_VALUE(ZB_SCHEDULE_APP_CALLBACK(reboot_application, 0));
+                break;
+
+            case ZB_ZCL_OTA_UPGRADE_STATUS_ABORT:
+                NRF_LOG_INFO("Zigbee DFU Aborted");
+                p_ota_upgrade_value->upgrade_status = ZB_ZCL_OTA_UPGRADE_STATUS_ABORT;
+                bsp_board_led_off(OTA_ACTVITY_LED);
+                zb_abort_dfu();
+                break;
+
+            case ZB_ZCL_OTA_UPGRADE_STATUS_SERVER_NOT_FOUND:
+                NRF_LOG_INFO("OTA Upgrade server not found");
+                break;
+
+            default:
+                break;
+            }
+            /* No need to free the buffer - stack handles that if needed */
+    }
+    break;
 
     default:
         p_device_cb_param->status = RET_ERROR;
@@ -531,6 +773,11 @@ void zboss_signal_handler(zb_bufid_t bufid)
         break;
     case ZB_BDB_SIGNAL_DEVICE_REBOOT:
         NRF_LOG_INFO("ZB_BDB_SIGNAL_DEVICE_REBOOT: %d", status);
+        if (status == RET_OK)
+        {
+            ret_code_t err_code = zb_zcl_ota_upgrade_client_with_periodical_discovery_start(&m_discovery_ctx);
+            APP_ERROR_CHECK(err_code);
+        }
         break;
     case ZB_COMMON_SIGNAL_CAN_SLEEP:
         NRF_LOG_INFO("ZB_COMMON_SIGNAL_CAN_SLEEP: %d", status);
@@ -555,6 +802,11 @@ void zboss_signal_handler(zb_bufid_t bufid)
         break;
     case ZB_BDB_SIGNAL_STEERING:
         NRF_LOG_INFO("ZB_BDB_SIGNAL_STEERING: %d", status);
+        if (status == RET_OK)
+        {
+            ret_code_t err_code = zb_zcl_ota_upgrade_client_with_periodical_discovery_start(&m_discovery_ctx);
+            APP_ERROR_CHECK(err_code);
+        }
         break;
     case ZB_BDB_SIGNAL_FORMATION:
         NRF_LOG_INFO("ZB_BDB_SIGNAL_FORMATION: %d", status);
@@ -637,6 +889,12 @@ int main(void)
     ZB_SET_TRACE_MASK(ZIGBEE_TRACE_MASK);
     ZB_SET_TRAF_DUMP_OFF();
 
+    /* Initialize the Zigbee DFU Transport */
+    zb_dfu_init(OTA_ENDPOINT);
+
+    /* Initialize the attributes */
+    ota_client_attr_init();
+
     ZB_INIT("dimmer_rgbw");
 
     zb_osif_get_ieee_eui64(ieee_addr); // читаем полный адрес из памяти
@@ -658,12 +916,16 @@ int main(void)
 
     nrf_802154_tx_power_set(8);
 
+    zb_err_code = zb_zcl_ota_upgrade_client_with_periodical_discovery_init(&m_discovery_ctx, &m_ota_server_discovery_timer, OTA_ENDPOINT);
+    APP_ERROR_CHECK(zb_err_code);
+
     zb_err_code = zboss_start_no_autostart(); // запуск стека зигби
     ZB_ERROR_CHECK(zb_err_code);
 
     while (1) // вечный цикл, в котором крутится вся жизнь приложения
     {
         zboss_main_loop_iteration();
+        app_sched_execute();
         UNUSED_RETURN_VALUE(NRF_LOG_PROCESS());
     }
 }

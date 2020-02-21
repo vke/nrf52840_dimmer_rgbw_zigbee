@@ -141,6 +141,1086 @@
 // </h>
 //==========================================================
 
+// <h> nRF_Crypto
+
+//==========================================================
+// <e> NRF_CRYPTO_ENABLED - nrf_crypto - Cryptography library.
+//==========================================================
+#ifndef NRF_CRYPTO_ENABLED
+#define NRF_CRYPTO_ENABLED 1
+#endif
+// <o> NRF_CRYPTO_ALLOCATOR  - Memory allocator
+
+
+// <i> Choose memory allocator used by nrf_crypto. Default is alloca if possible or nrf_malloc otherwise. If 'User macros' are selected, the user has to create 'nrf_crypto_allocator.h' file that contains NRF_CRYPTO_ALLOC, NRF_CRYPTO_FREE, and NRF_CRYPTO_ALLOC_ON_STACK.
+// <0=> Default
+// <1=> User macros
+// <2=> On stack (alloca)
+// <3=> C dynamic memory (malloc)
+// <4=> SDK Memory Manager (nrf_malloc)
+
+#ifndef NRF_CRYPTO_ALLOCATOR
+#define NRF_CRYPTO_ALLOCATOR 0
+#endif
+
+// <e> NRF_CRYPTO_BACKEND_CC310_BL_ENABLED - Enable the ARM Cryptocell CC310 reduced backend.
+
+// <i> The CC310 hardware-accelerated cryptography backend with reduced functionality and footprint (only available on nRF52840).
+//==========================================================
+#ifndef NRF_CRYPTO_BACKEND_CC310_BL_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_BL_ENABLED 1
+#endif
+// <q> NRF_CRYPTO_BACKEND_CC310_BL_ECC_SECP224R1_ENABLED  - Enable the secp224r1 elliptic curve support using CC310_BL.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_BL_ECC_SECP224R1_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_BL_ECC_SECP224R1_ENABLED 0
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_BL_ECC_SECP256R1_ENABLED  - Enable the secp256r1 elliptic curve support using CC310_BL.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_BL_ECC_SECP256R1_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_BL_ECC_SECP256R1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_BL_HASH_SHA256_ENABLED  - CC310_BL SHA-256 hash functionality.
+
+
+// <i> CC310_BL backend implementation for hardware-accelerated SHA-256.
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_BL_HASH_SHA256_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_BL_HASH_SHA256_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_BL_HASH_AUTOMATIC_RAM_BUFFER_ENABLED  - nrf_cc310_bl buffers to RAM before running hash operation
+
+
+// <i> Enabling this makes hashing of addresses in FLASH range possible. Size of buffer allocated for hashing is set by NRF_CRYPTO_BACKEND_CC310_BL_HASH_AUTOMATIC_RAM_BUFFER_SIZE
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_BL_HASH_AUTOMATIC_RAM_BUFFER_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_BL_HASH_AUTOMATIC_RAM_BUFFER_ENABLED 1
+#endif
+
+// <o> NRF_CRYPTO_BACKEND_CC310_BL_HASH_AUTOMATIC_RAM_BUFFER_SIZE - nrf_cc310_bl hash outputs digests in little endian
+// <i> Makes the nrf_cc310_bl hash functions output digests in little endian format. Only for use in nRF SDK DFU!
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_BL_HASH_AUTOMATIC_RAM_BUFFER_SIZE
+#define NRF_CRYPTO_BACKEND_CC310_BL_HASH_AUTOMATIC_RAM_BUFFER_SIZE 4096
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_BL_INTERRUPTS_ENABLED  - Enable Interrupts while support using CC310 bl.
+
+
+// <i> Select a library version compatible with the configuration. When interrupts are disable, a version named _noint must be used
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_BL_INTERRUPTS_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_BL_INTERRUPTS_ENABLED 1
+#endif
+
+// </e>
+
+// <e> NRF_CRYPTO_BACKEND_CC310_ENABLED - Enable the ARM Cryptocell CC310 backend.
+
+// <i> The CC310 hardware-accelerated cryptography backend (only available on nRF52840).
+//==========================================================
+#ifndef NRF_CRYPTO_BACKEND_CC310_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_ENABLED 0
+#endif
+// <q> NRF_CRYPTO_BACKEND_CC310_AES_CBC_ENABLED  - Enable the AES CBC mode using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_AES_CBC_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_AES_CBC_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_AES_CTR_ENABLED  - Enable the AES CTR mode using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_AES_CTR_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_AES_CTR_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_AES_ECB_ENABLED  - Enable the AES ECB mode using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_AES_ECB_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_AES_ECB_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_AES_CBC_MAC_ENABLED  - Enable the AES CBC_MAC mode using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_AES_CBC_MAC_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_AES_CBC_MAC_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_AES_CMAC_ENABLED  - Enable the AES CMAC mode using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_AES_CMAC_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_AES_CMAC_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_AES_CCM_ENABLED  - Enable the AES CCM mode using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_AES_CCM_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_AES_CCM_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_AES_CCM_STAR_ENABLED  - Enable the AES CCM* mode using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_AES_CCM_STAR_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_AES_CCM_STAR_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_CHACHA_POLY_ENABLED  - Enable the CHACHA-POLY mode using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_CHACHA_POLY_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_CHACHA_POLY_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_ECC_SECP160R1_ENABLED  - Enable the secp160r1 elliptic curve support using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_ECC_SECP160R1_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_ECC_SECP160R1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_ECC_SECP160R2_ENABLED  - Enable the secp160r2 elliptic curve support using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_ECC_SECP160R2_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_ECC_SECP160R2_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_ECC_SECP192R1_ENABLED  - Enable the secp192r1 elliptic curve support using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_ECC_SECP192R1_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_ECC_SECP192R1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_ECC_SECP224R1_ENABLED  - Enable the secp224r1 elliptic curve support using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_ECC_SECP224R1_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_ECC_SECP224R1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_ECC_SECP256R1_ENABLED  - Enable the secp256r1 elliptic curve support using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_ECC_SECP256R1_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_ECC_SECP256R1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_ECC_SECP384R1_ENABLED  - Enable the secp384r1 elliptic curve support using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_ECC_SECP384R1_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_ECC_SECP384R1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_ECC_SECP521R1_ENABLED  - Enable the secp521r1 elliptic curve support using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_ECC_SECP521R1_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_ECC_SECP521R1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_ECC_SECP160K1_ENABLED  - Enable the secp160k1 elliptic curve support using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_ECC_SECP160K1_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_ECC_SECP160K1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_ECC_SECP192K1_ENABLED  - Enable the secp192k1 elliptic curve support using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_ECC_SECP192K1_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_ECC_SECP192K1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_ECC_SECP224K1_ENABLED  - Enable the secp224k1 elliptic curve support using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_ECC_SECP224K1_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_ECC_SECP224K1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_ECC_SECP256K1_ENABLED  - Enable the secp256k1 elliptic curve support using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_ECC_SECP256K1_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_ECC_SECP256K1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_ECC_CURVE25519_ENABLED  - Enable the Curve25519 curve support using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_ECC_CURVE25519_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_ECC_CURVE25519_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_ECC_ED25519_ENABLED  - Enable the Ed25519 curve support using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_ECC_ED25519_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_ECC_ED25519_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_HASH_SHA256_ENABLED  - CC310 SHA-256 hash functionality.
+
+
+// <i> CC310 backend implementation for hardware-accelerated SHA-256.
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_HASH_SHA256_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_HASH_SHA256_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_HASH_SHA512_ENABLED  - CC310 SHA-512 hash functionality
+
+
+// <i> CC310 backend implementation for SHA-512 (in software).
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_HASH_SHA512_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_HASH_SHA512_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_HMAC_SHA256_ENABLED  - CC310 HMAC using SHA-256
+
+
+// <i> CC310 backend implementation for HMAC using hardware-accelerated SHA-256.
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_HMAC_SHA256_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_HMAC_SHA256_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_HMAC_SHA512_ENABLED  - CC310 HMAC using SHA-512
+
+
+// <i> CC310 backend implementation for HMAC using SHA-512 (in software).
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_HMAC_SHA512_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_HMAC_SHA512_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_RNG_ENABLED  - Enable RNG support using CC310.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_RNG_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_RNG_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_CC310_INTERRUPTS_ENABLED  - Enable Interrupts while support using CC310.
+
+
+// <i> Select a library version compatible with the configuration. When interrupts are disable, a version named _noint must be used
+
+#ifndef NRF_CRYPTO_BACKEND_CC310_INTERRUPTS_ENABLED
+#define NRF_CRYPTO_BACKEND_CC310_INTERRUPTS_ENABLED 1
+#endif
+
+// </e>
+
+// <e> NRF_CRYPTO_BACKEND_CIFRA_ENABLED - Enable the Cifra backend.
+//==========================================================
+#ifndef NRF_CRYPTO_BACKEND_CIFRA_ENABLED
+#define NRF_CRYPTO_BACKEND_CIFRA_ENABLED 0
+#endif
+// <q> NRF_CRYPTO_BACKEND_CIFRA_AES_EAX_ENABLED  - Enable the AES EAX mode using Cifra.
+
+
+#ifndef NRF_CRYPTO_BACKEND_CIFRA_AES_EAX_ENABLED
+#define NRF_CRYPTO_BACKEND_CIFRA_AES_EAX_ENABLED 1
+#endif
+
+// </e>
+
+// <e> NRF_CRYPTO_BACKEND_MBEDTLS_ENABLED - Enable the mbed TLS backend.
+//==========================================================
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_ENABLED 0
+#endif
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_AES_CBC_ENABLED  - Enable the AES CBC mode mbed TLS.
+
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_AES_CBC_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_AES_CBC_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_AES_CTR_ENABLED  - Enable the AES CTR mode using mbed TLS.
+
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_AES_CTR_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_AES_CTR_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_AES_CFB_ENABLED  - Enable the AES CFB mode using mbed TLS.
+
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_AES_CFB_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_AES_CFB_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_AES_ECB_ENABLED  - Enable the AES ECB mode using mbed TLS.
+
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_AES_ECB_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_AES_ECB_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_AES_CBC_MAC_ENABLED  - Enable the AES CBC MAC mode using mbed TLS.
+
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_AES_CBC_MAC_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_AES_CBC_MAC_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_AES_CMAC_ENABLED  - Enable the AES CMAC mode using mbed TLS.
+
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_AES_CMAC_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_AES_CMAC_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_AES_CCM_ENABLED  - Enable the AES CCM mode using mbed TLS.
+
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_AES_CCM_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_AES_CCM_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_AES_GCM_ENABLED  - Enable the AES GCM mode using mbed TLS.
+
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_AES_GCM_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_AES_GCM_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP192R1_ENABLED  - Enable secp192r1 (NIST 192-bit) curve
+
+
+// <i> Enable this setting if you need secp192r1 (NIST 192-bit) support using MBEDTLS
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP192R1_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP192R1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP224R1_ENABLED  - Enable secp224r1 (NIST 224-bit) curve
+
+
+// <i> Enable this setting if you need secp224r1 (NIST 224-bit) support using MBEDTLS
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP224R1_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP224R1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP256R1_ENABLED  - Enable secp256r1 (NIST 256-bit) curve
+
+
+// <i> Enable this setting if you need secp256r1 (NIST 256-bit) support using MBEDTLS
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP256R1_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP256R1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP384R1_ENABLED  - Enable secp384r1 (NIST 384-bit) curve
+
+
+// <i> Enable this setting if you need secp384r1 (NIST 384-bit) support using MBEDTLS
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP384R1_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP384R1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP521R1_ENABLED  - Enable secp521r1 (NIST 521-bit) curve
+
+
+// <i> Enable this setting if you need secp521r1 (NIST 521-bit) support using MBEDTLS
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP521R1_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP521R1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP192K1_ENABLED  - Enable secp192k1 (Koblitz 192-bit) curve
+
+
+// <i> Enable this setting if you need secp192k1 (Koblitz 192-bit) support using MBEDTLS
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP192K1_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP192K1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP224K1_ENABLED  - Enable secp224k1 (Koblitz 224-bit) curve
+
+
+// <i> Enable this setting if you need secp224k1 (Koblitz 224-bit) support using MBEDTLS
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP224K1_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP224K1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP256K1_ENABLED  - Enable secp256k1 (Koblitz 256-bit) curve
+
+
+// <i> Enable this setting if you need secp256k1 (Koblitz 256-bit) support using MBEDTLS
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP256K1_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_ECC_SECP256K1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_ECC_BP256R1_ENABLED  - Enable bp256r1 (Brainpool 256-bit) curve
+
+
+// <i> Enable this setting if you need bp256r1 (Brainpool 256-bit) support using MBEDTLS
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_ECC_BP256R1_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_ECC_BP256R1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_ECC_BP384R1_ENABLED  - Enable bp384r1 (Brainpool 384-bit) curve
+
+
+// <i> Enable this setting if you need bp384r1 (Brainpool 384-bit) support using MBEDTLS
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_ECC_BP384R1_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_ECC_BP384R1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_ECC_BP512R1_ENABLED  - Enable bp512r1 (Brainpool 512-bit) curve
+
+
+// <i> Enable this setting if you need bp512r1 (Brainpool 512-bit) support using MBEDTLS
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_ECC_BP512R1_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_ECC_BP512R1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_ECC_CURVE25519_ENABLED  - Enable Curve25519 curve
+
+
+// <i> Enable this setting if you need Curve25519 support using MBEDTLS
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_ECC_CURVE25519_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_ECC_CURVE25519_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_HASH_SHA256_ENABLED  - Enable mbed TLS SHA-256 hash functionality.
+
+
+// <i> mbed TLS backend implementation for SHA-256.
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_HASH_SHA256_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_HASH_SHA256_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_HASH_SHA512_ENABLED  - Enable mbed TLS SHA-512 hash functionality.
+
+
+// <i> mbed TLS backend implementation for SHA-512.
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_HASH_SHA512_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_HASH_SHA512_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_HMAC_SHA256_ENABLED  - Enable mbed TLS HMAC using SHA-256.
+
+
+// <i> mbed TLS backend implementation for HMAC using SHA-256.
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_HMAC_SHA256_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_HMAC_SHA256_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MBEDTLS_HMAC_SHA512_ENABLED  - Enable mbed TLS HMAC using SHA-512.
+
+
+// <i> mbed TLS backend implementation for HMAC using SHA-512.
+
+#ifndef NRF_CRYPTO_BACKEND_MBEDTLS_HMAC_SHA512_ENABLED
+#define NRF_CRYPTO_BACKEND_MBEDTLS_HMAC_SHA512_ENABLED 1
+#endif
+
+// </e>
+
+// <e> NRF_CRYPTO_BACKEND_MICRO_ECC_ENABLED - Enable the micro-ecc backend.
+//==========================================================
+#ifndef NRF_CRYPTO_BACKEND_MICRO_ECC_ENABLED
+#define NRF_CRYPTO_BACKEND_MICRO_ECC_ENABLED 0
+#endif
+// <q> NRF_CRYPTO_BACKEND_MICRO_ECC_ECC_SECP192R1_ENABLED  - Enable secp192r1 (NIST 192-bit) curve
+
+
+// <i> Enable this setting if you need secp192r1 (NIST 192-bit) support using micro-ecc
+
+#ifndef NRF_CRYPTO_BACKEND_MICRO_ECC_ECC_SECP192R1_ENABLED
+#define NRF_CRYPTO_BACKEND_MICRO_ECC_ECC_SECP192R1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MICRO_ECC_ECC_SECP224R1_ENABLED  - Enable secp224r1 (NIST 224-bit) curve
+
+
+// <i> Enable this setting if you need secp224r1 (NIST 224-bit) support using micro-ecc
+
+#ifndef NRF_CRYPTO_BACKEND_MICRO_ECC_ECC_SECP224R1_ENABLED
+#define NRF_CRYPTO_BACKEND_MICRO_ECC_ECC_SECP224R1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MICRO_ECC_ECC_SECP256R1_ENABLED  - Enable secp256r1 (NIST 256-bit) curve
+
+
+// <i> Enable this setting if you need secp256r1 (NIST 256-bit) support using micro-ecc
+
+#ifndef NRF_CRYPTO_BACKEND_MICRO_ECC_ECC_SECP256R1_ENABLED
+#define NRF_CRYPTO_BACKEND_MICRO_ECC_ECC_SECP256R1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_MICRO_ECC_ECC_SECP256K1_ENABLED  - Enable secp256k1 (Koblitz 256-bit) curve
+
+
+// <i> Enable this setting if you need secp256k1 (Koblitz 256-bit) support using micro-ecc
+
+#ifndef NRF_CRYPTO_BACKEND_MICRO_ECC_ECC_SECP256K1_ENABLED
+#define NRF_CRYPTO_BACKEND_MICRO_ECC_ECC_SECP256K1_ENABLED 1
+#endif
+
+// </e>
+
+// <e> NRF_CRYPTO_BACKEND_NRF_HW_RNG_ENABLED - Enable the nRF HW RNG backend.
+
+// <i> The nRF HW backend provide access to RNG peripheral in nRF5x devices.
+//==========================================================
+#ifndef NRF_CRYPTO_BACKEND_NRF_HW_RNG_ENABLED
+#define NRF_CRYPTO_BACKEND_NRF_HW_RNG_ENABLED 0
+#endif
+// <q> NRF_CRYPTO_BACKEND_NRF_HW_RNG_MBEDTLS_CTR_DRBG_ENABLED  - Enable mbed TLS CTR-DRBG algorithm.
+
+
+// <i> Enable mbed TLS CTR-DRBG standardized by NIST (NIST SP 800-90A Rev. 1). The nRF HW RNG is used as an entropy source for seeding.
+
+#ifndef NRF_CRYPTO_BACKEND_NRF_HW_RNG_MBEDTLS_CTR_DRBG_ENABLED
+#define NRF_CRYPTO_BACKEND_NRF_HW_RNG_MBEDTLS_CTR_DRBG_ENABLED 1
+#endif
+
+// </e>
+
+// <e> NRF_CRYPTO_BACKEND_NRF_SW_ENABLED - Enable the legacy nRFx sw for crypto.
+
+// <i> The nRF SW cryptography backend (only used in bootloader context).
+//==========================================================
+#ifndef NRF_CRYPTO_BACKEND_NRF_SW_ENABLED
+#define NRF_CRYPTO_BACKEND_NRF_SW_ENABLED 0
+#endif
+// <q> NRF_CRYPTO_BACKEND_NRF_SW_HASH_SHA256_ENABLED  - nRF SW hash backend support for SHA-256
+
+
+// <i> The nRF SW backend provide access to nRF SDK legacy hash implementation of SHA-256.
+
+#ifndef NRF_CRYPTO_BACKEND_NRF_SW_HASH_SHA256_ENABLED
+#define NRF_CRYPTO_BACKEND_NRF_SW_HASH_SHA256_ENABLED 1
+#endif
+
+// </e>
+
+// <e> NRF_CRYPTO_BACKEND_OBERON_ENABLED - Enable the Oberon backend
+
+// <i> The Oberon backend
+//==========================================================
+#ifndef NRF_CRYPTO_BACKEND_OBERON_ENABLED
+#define NRF_CRYPTO_BACKEND_OBERON_ENABLED 0
+#endif
+// <q> NRF_CRYPTO_BACKEND_OBERON_CHACHA_POLY_ENABLED  - Enable the CHACHA-POLY mode using Oberon.
+
+
+#ifndef NRF_CRYPTO_BACKEND_OBERON_CHACHA_POLY_ENABLED
+#define NRF_CRYPTO_BACKEND_OBERON_CHACHA_POLY_ENABLED 0
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_OBERON_ECC_SECP256R1_ENABLED  - Enable secp256r1 curve
+
+
+// <i> Enable this setting if you need secp256r1 curve support using Oberon library
+
+#ifndef NRF_CRYPTO_BACKEND_OBERON_ECC_SECP256R1_ENABLED
+#define NRF_CRYPTO_BACKEND_OBERON_ECC_SECP256R1_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_OBERON_ECC_CURVE25519_ENABLED  - Enable Curve25519 ECDH
+
+
+// <i> Enable this setting if you need Curve25519 ECDH support using Oberon library
+
+#ifndef NRF_CRYPTO_BACKEND_OBERON_ECC_CURVE25519_ENABLED
+#define NRF_CRYPTO_BACKEND_OBERON_ECC_CURVE25519_ENABLED 0
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_OBERON_ECC_ED25519_ENABLED  - Enable Ed25519 signature scheme
+
+
+// <i> Enable this setting if you need Ed25519 support using Oberon library
+
+#ifndef NRF_CRYPTO_BACKEND_OBERON_ECC_ED25519_ENABLED
+#define NRF_CRYPTO_BACKEND_OBERON_ECC_ED25519_ENABLED 0
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_OBERON_HASH_SHA256_ENABLED  - Oberon SHA-256 hash functionality
+
+
+// <i> Oberon backend implementation for SHA-256.
+
+#ifndef NRF_CRYPTO_BACKEND_OBERON_HASH_SHA256_ENABLED
+#define NRF_CRYPTO_BACKEND_OBERON_HASH_SHA256_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_OBERON_HASH_SHA512_ENABLED  - Oberon SHA-512 hash functionality
+
+
+// <i> Oberon backend implementation for SHA-512.
+
+#ifndef NRF_CRYPTO_BACKEND_OBERON_HASH_SHA512_ENABLED
+#define NRF_CRYPTO_BACKEND_OBERON_HASH_SHA512_ENABLED 0
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_OBERON_HMAC_SHA256_ENABLED  - Oberon HMAC using SHA-256
+
+
+// <i> Oberon backend implementation for HMAC using SHA-256.
+
+#ifndef NRF_CRYPTO_BACKEND_OBERON_HMAC_SHA256_ENABLED
+#define NRF_CRYPTO_BACKEND_OBERON_HMAC_SHA256_ENABLED 0
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_OBERON_HMAC_SHA512_ENABLED  - Oberon HMAC using SHA-512
+
+
+// <i> Oberon backend implementation for HMAC using SHA-512.
+
+#ifndef NRF_CRYPTO_BACKEND_OBERON_HMAC_SHA512_ENABLED
+#define NRF_CRYPTO_BACKEND_OBERON_HMAC_SHA512_ENABLED 0
+#endif
+
+// </e>
+
+// <e> NRF_CRYPTO_BACKEND_OPTIGA_ENABLED - Enable the nrf_crypto Optiga Trust X backend.
+
+// <i> Enables the nrf_crypto backend for Optiga Trust X devices.
+//==========================================================
+#ifndef NRF_CRYPTO_BACKEND_OPTIGA_ENABLED
+#define NRF_CRYPTO_BACKEND_OPTIGA_ENABLED 0
+#endif
+// <q> NRF_CRYPTO_BACKEND_OPTIGA_RNG_ENABLED  - Optiga backend support for RNG
+
+
+// <i> The Optiga backend provide external chip RNG.
+
+#ifndef NRF_CRYPTO_BACKEND_OPTIGA_RNG_ENABLED
+#define NRF_CRYPTO_BACKEND_OPTIGA_RNG_ENABLED 0
+#endif
+
+// <q> NRF_CRYPTO_BACKEND_OPTIGA_ECC_SECP256R1_ENABLED  - Optiga backend support for ECC secp256r1
+
+
+// <i> The Optiga backend provide external chip ECC using secp256r1.
+
+#ifndef NRF_CRYPTO_BACKEND_OPTIGA_ECC_SECP256R1_ENABLED
+#define NRF_CRYPTO_BACKEND_OPTIGA_ECC_SECP256R1_ENABLED 1
+#endif
+
+// </e>
+
+// <q> NRF_CRYPTO_CURVE25519_BIG_ENDIAN_ENABLED  - Big-endian byte order in raw Curve25519 data
+
+
+// <i> Enable big-endian byte order in Curve25519 API, if set to 1. Use little-endian, if set to 0.
+
+#ifndef NRF_CRYPTO_CURVE25519_BIG_ENDIAN_ENABLED
+#define NRF_CRYPTO_CURVE25519_BIG_ENDIAN_ENABLED 0
+#endif
+
+// </e>
+
+// <h> nrf_crypto_rng - RNG Configuration
+
+//==========================================================
+// <q> NRF_CRYPTO_RNG_STATIC_MEMORY_BUFFERS_ENABLED  - Use static memory buffers for context and temporary init buffer.
+
+
+// <i> Always recommended when using the nRF HW RNG as the context and temporary buffers are small. Consider disabling if using the CC310 RNG in a RAM constrained application. In this case, memory must be provided to nrf_crypto_rng_init, or it can be allocated internally provided that NRF_CRYPTO_ALLOCATOR does not allocate memory on the stack.
+
+#ifndef NRF_CRYPTO_RNG_STATIC_MEMORY_BUFFERS_ENABLED
+#define NRF_CRYPTO_RNG_STATIC_MEMORY_BUFFERS_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_RNG_AUTO_INIT_ENABLED  - Initialize the RNG module automatically when nrf_crypto is initialized.
+
+
+// <i> Automatic initialization is only supported with static or internally allocated context and temporary memory.
+
+#ifndef NRF_CRYPTO_RNG_AUTO_INIT_ENABLED
+#define NRF_CRYPTO_RNG_AUTO_INIT_ENABLED 1
+#endif
+
+// </h>
+//==========================================================
+
+// </h>
+//==========================================================
+
+// <h> nRF_DFU
+
+//==========================================================
+// <h> DFU security - nrf_dfu_validation - DFU validation
+
+//==========================================================
+// <q> NRF_DFU_APP_ACCEPT_SAME_VERSION  - Whether to accept application upgrades with the same version as the current application.
+
+
+// <i> This applies to application updates, and possibly to SoftDevice updates.
+// <i> Bootloader upgrades always require higher versions. SoftDevice upgrades
+// <i> look at the sd_req field independently of this config.
+// <i> Disabling this protects against replay attacks wearing out the flash of the device.
+// <i> This config only has an effect when NRF_DFU_APP_DOWNGRADE_PREVENTION is enabled.
+
+#ifndef NRF_DFU_APP_ACCEPT_SAME_VERSION
+#define NRF_DFU_APP_ACCEPT_SAME_VERSION 1
+#endif
+
+// <q> NRF_DFU_APP_DOWNGRADE_PREVENTION  - Check the firmware version and SoftDevice requirements of application (and SoftDevice) updates.
+
+
+// <i> Whether to check the incoming version against the version of the existing app and/or
+// <i> the incoming SoftDevice requirements against the existing SoftDevice.
+// <i> This applies to application updates, and possibly to SoftDevice updates.
+// <i> Disabling this causes the checks to always ignore the incoming firmware version and
+// <i> to ignore the SoftDevice requirements if the first requirement is 0.
+// <i> This does not apply the bootloader updates. If the bootloader depends on the SoftDevice
+// <i> e.g. for BLE transport, this does not apply to SoftDevice updates.
+// <i> See @ref lib_bootloader_dfu_validation for more information.
+// <i> When signed updates are required, version checking should always be enabled.
+
+#ifndef NRF_DFU_APP_DOWNGRADE_PREVENTION
+#define NRF_DFU_APP_DOWNGRADE_PREVENTION 1
+#endif
+
+// <q> NRF_DFU_EXTERNAL_APP_VERSIONING  - Require versioning for external applications.
+
+
+// <i> This configuration is only used if NRF_DFU_SUPPORTS_EXTERNAL_APP is set to 1.
+// <i> Setting this will require that any FW images using the FW upgrade type
+// <i> DFU_FW_TYPE_EXTERNAL_APPLICATION must follow a monotonic versioning scheme
+// <i> where the FW version of an upgrade must always be larger than the previously stored
+// <i> FW version.
+
+#ifndef NRF_DFU_EXTERNAL_APP_VERSIONING
+#define NRF_DFU_EXTERNAL_APP_VERSIONING 1
+#endif
+
+// <q> NRF_DFU_FORCE_DUAL_BANK_APP_UPDATES  - Accept only dual-bank application updates.
+
+
+// <i> If not enabled then if there is not enough space to perform dual-bank update
+// <i> application is deleted and single-bank update is performed. In case it is considered
+// <i> security concern user can prefer to discard update request rather than overwrite
+// <i> current application.
+
+#ifndef NRF_DFU_FORCE_DUAL_BANK_APP_UPDATES
+#define NRF_DFU_FORCE_DUAL_BANK_APP_UPDATES 1
+#endif
+
+// <o> NRF_DFU_HW_VERSION - Device hardware version.
+// <i> This is used to determine if given update is targeting the device.
+// <i> It is checked against the hw_version value in the init packet
+
+#ifndef NRF_DFU_HW_VERSION
+#define NRF_DFU_HW_VERSION 52
+#endif
+
+// <q> NRF_DFU_REQUIRE_SIGNED_APP_UPDATE  - Require a valid signature to update the application or SoftDevice.
+
+
+#ifndef NRF_DFU_REQUIRE_SIGNED_APP_UPDATE
+#define NRF_DFU_REQUIRE_SIGNED_APP_UPDATE 1
+#endif
+
+// <q> NRF_DFU_SINGLE_BANK_APP_UPDATES  - Place the application and the SoftDevice directly where they are supposed to be.
+
+
+// <i> Note that this creates security concerns when signing and  version checks
+// <i> are enabled. An attacker will be able to delete (but not replace)
+// <i> the current app or SoftDevice without knowing the signature key.
+
+#ifndef NRF_DFU_SINGLE_BANK_APP_UPDATES
+#define NRF_DFU_SINGLE_BANK_APP_UPDATES 0
+#endif
+
+// </h>
+//==========================================================
+
+// <q> NRF_DFU_SETTINGS_COMPATIBILITY_MODE  - nrf_dfu_settings - DFU Settings
+
+
+#ifndef NRF_DFU_SETTINGS_COMPATIBILITY_MODE
+#define NRF_DFU_SETTINGS_COMPATIBILITY_MODE 1
+#endif
+
+// <h> nrf_dfu - Device Firmware Upgrade
+
+//==========================================================
+// <h> DFU transport
+
+//==========================================================
+// <e> NRF_DFU_TRANSPORT_ANT - ANT transport settings
+//==========================================================
+#ifndef NRF_DFU_TRANSPORT_ANT
+#define NRF_DFU_TRANSPORT_ANT 0
+#endif
+// <o> NRF_DFU_ANT_MTU - MTU size used for firmware bursts.
+// <i> Sets the maximum burst size used for DFU write commands.
+
+#ifndef NRF_DFU_ANT_MTU
+#define NRF_DFU_ANT_MTU 1024
+#endif
+
+// <h> ANT DFU buffers
+
+//==========================================================
+// <e> NRF_DFU_ANT_BUFFERS_OVERRIDE
+
+// <i> Check this option to override the default number of buffers.
+//==========================================================
+#ifndef NRF_DFU_ANT_BUFFERS_OVERRIDE
+#define NRF_DFU_ANT_BUFFERS_OVERRIDE 0
+#endif
+// <o> NRF_DFU_ANT_BUFFERS - Number of buffers in the ANT transport.
+// <i> Number of buffers to store incoming data while it is being written to flash.
+// <i> Reduce this value to save RAM. If this value is too low, the DFU process will fail.
+
+#ifndef NRF_DFU_ANT_BUFFERS
+#define NRF_DFU_ANT_BUFFERS 8
+#endif
+
+// </e>
+
+// </h>
+//==========================================================
+
+// <h> ANT DFU Channel Configuration
+
+//==========================================================
+// <o> NRF_DFU_ANT_RF_FREQ - DFU RF channel.
+#ifndef NRF_DFU_ANT_RF_FREQ
+#define NRF_DFU_ANT_RF_FREQ 66
+#endif
+
+// <o> NRF_DFU_ANT_DEV_TYPE - Device type field to use for DFU channel id.
+#ifndef NRF_DFU_ANT_DEV_TYPE
+#define NRF_DFU_ANT_DEV_TYPE 10
+#endif
+
+// <o> NRF_DFU_ANT_CHANNEL_PERIOD - Channel period of DFU ANT channel.
+#ifndef NRF_DFU_ANT_CHANNEL_PERIOD
+#define NRF_DFU_ANT_CHANNEL_PERIOD 2048
+#endif
+
+// </h>
+//==========================================================
+
+// </e>
+
+// <e> NRF_DFU_TRANSPORT_BLE - BLE transport settings
+//==========================================================
+#ifndef NRF_DFU_TRANSPORT_BLE
+#define NRF_DFU_TRANSPORT_BLE 0
+#endif
+// <q> NRF_DFU_BLE_SKIP_SD_INIT  - Skip the SoftDevice and interrupt vector table initialization.
+
+
+#ifndef NRF_DFU_BLE_SKIP_SD_INIT
+#define NRF_DFU_BLE_SKIP_SD_INIT 0
+#endif
+
+// <s> NRF_DFU_BLE_ADV_NAME - Default advertising name.
+#ifndef NRF_DFU_BLE_ADV_NAME
+#define NRF_DFU_BLE_ADV_NAME "DfuTarg"
+#endif
+
+// <o> NRF_DFU_BLE_ADV_INTERVAL - Advertising interval (in units of 0.625 ms)
+#ifndef NRF_DFU_BLE_ADV_INTERVAL
+#define NRF_DFU_BLE_ADV_INTERVAL 40
+#endif
+
+// <h> BLE DFU security
+
+//==========================================================
+// <q> NRF_DFU_BLE_REQUIRES_BONDS  - Require bond with peer.
+
+
+#ifndef NRF_DFU_BLE_REQUIRES_BONDS
+#define NRF_DFU_BLE_REQUIRES_BONDS 0
+#endif
+
+// </h>
+//==========================================================
+
+// <h> BLE DFU connection
+
+//==========================================================
+// <o> NRF_DFU_BLE_MIN_CONN_INTERVAL - Minimum connection interval (units).
+// <i> Minimum GAP connection interval, in 1.25 ms units.
+
+#ifndef NRF_DFU_BLE_MIN_CONN_INTERVAL
+#define NRF_DFU_BLE_MIN_CONN_INTERVAL 12
+#endif
+
+// <o> NRF_DFU_BLE_MAX_CONN_INTERVAL - Maximum connection interval (units).
+// <i> Maximum GAP connection interval, in 1.25 ms units.
+
+#ifndef NRF_DFU_BLE_MAX_CONN_INTERVAL
+#define NRF_DFU_BLE_MAX_CONN_INTERVAL 12
+#endif
+
+// <o> NRF_DFU_BLE_CONN_SUP_TIMEOUT_MS - Supervision timeout (ms).
+// <i> GAP connection supervision timeout, in milliseconds.
+
+#ifndef NRF_DFU_BLE_CONN_SUP_TIMEOUT_MS
+#define NRF_DFU_BLE_CONN_SUP_TIMEOUT_MS 6000
+#endif
+
+// </h>
+//==========================================================
+
+// <h> BLE DFU buffers
+
+//==========================================================
+// <e> NRF_DFU_BLE_BUFFERS_OVERRIDE
+
+// <i> Check this option to override the default number of buffers.
+//==========================================================
+#ifndef NRF_DFU_BLE_BUFFERS_OVERRIDE
+#define NRF_DFU_BLE_BUFFERS_OVERRIDE 0
+#endif
+// <o> NRF_DFU_BLE_BUFFERS - Number of buffers in the BLE transport.
+// <i> Number of buffers to store incoming data while it is being written to flash.
+// <i> Reduce this value to save RAM. If this value is too low, the DFU process will fail.
+
+#ifndef NRF_DFU_BLE_BUFFERS
+#define NRF_DFU_BLE_BUFFERS 8
+#endif
+
+// </e>
+
+// </h>
+//==========================================================
+
+// </e>
+
+// </h>
+//==========================================================
+
+// <h> DFU protocol
+
+//==========================================================
+// <q> NRF_DFU_PROTOCOL_FW_VERSION_MSG  - Firmware version message support.
+
+
+// <i> Firmware version message support.
+// <i> If disabled, firmware version requests will return NRF_DFU_RES_CODE_OP_CODE_NOT_SUPPORTED.
+
+#ifndef NRF_DFU_PROTOCOL_FW_VERSION_MSG
+#define NRF_DFU_PROTOCOL_FW_VERSION_MSG 1
+#endif
+
+// <q> NRF_DFU_PROTOCOL_REDUCED  - Reduced protocol opcode selection.
+
+
+// <i> Only support a minimal set of opcodes; return NRF_DFU_RES_CODE_OP_CODE_NOT_SUPPORTED
+// <i> for unsupported opcodes. The supported opcodes are:NRF_DFU_OP_OBJECT_CREATE,
+// <i> NRF_DFU_OP_OBJECT_EXECUTE, NRF_DFU_OP_OBJECT_SELECT, NRF_DFU_OP_OBJECT_WRITE,
+// <i> NRF_DFU_OP_CRC_GET, NRF_DFU_OP_RECEIPT_NOTIF_SET, and NRF_DFU_OP_ABORT.
+// <i> This reduced feature set is used by the BLE transport to reduce flash usage.
+
+#ifndef NRF_DFU_PROTOCOL_REDUCED
+#define NRF_DFU_PROTOCOL_REDUCED 0
+#endif
+
+// <q> NRF_DFU_PROTOCOL_VERSION_MSG  - Protocol version message support.
+
+
+// <i> Protocol version message support.
+// <i> If disabled, protocol version requests will return NRF_DFU_RES_CODE_OP_CODE_NOT_SUPPORTED.
+
+#ifndef NRF_DFU_PROTOCOL_VERSION_MSG
+#define NRF_DFU_PROTOCOL_VERSION_MSG 1
+#endif
+
+// </h>
+//==========================================================
+
+// <h> Misc DFU settings
+
+//==========================================================
+// <s> NRF_DFU_APP_DATA_AREA_SIZE - The size (in bytes) of the flash area reserved for application data.
+
+// <i> This area is found at the end of the application area, next to the start of
+// <i> the bootloader. This area will not be erased by the bootloader during a
+// <i> firmware upgrade. The size must be a multiple of the flash page size.
+#ifndef NRF_DFU_APP_DATA_AREA_SIZE
+#define NRF_DFU_APP_DATA_AREA_SIZE (ZIGBEE_NVRAM_PAGE_SIZE * ZIGBEE_NVRAM_PAGE_COUNT + ZIGBEE_NVRAM_CONFIG_PAGE_SIZE * ZIGBEE_NVRAM_CONFIG_PAGE_COUNT)
+#endif
+
+// <q> NRF_DFU_IN_APP  - Specifies that this code is in the app, not the bootloader, so some settings are off-limits.
+
+
+// <i> Enable this to disable writing to areas of the settings that are protected
+// <i> by the bootlader. If this is not enabled in the app, certain settings write
+// <i> operations will cause HardFaults or will be ignored. Enabling this option
+// <i> also causes postvalidation to be disabled since this is meant to be done
+// <i> in the bootloader. NRF_BL_DFU_ALLOW_UPDATE_FROM_APP must be enabled in the bootloader.
+
+#ifndef NRF_DFU_IN_APP
+#define NRF_DFU_IN_APP 1
+#endif
+
+// <q> NRF_DFU_SAVE_PROGRESS_IN_FLASH  - Save DFU progress in flash.
+
+
+// <i> Save DFU progress to flash so that it can be resumed if interrupted, instead of being restarted.
+// <i> Keep this setting disabled to maximize transfer speed and minimize flash wear.
+// <i> The init packet is always saved in flash, regardless of this setting.
+
+#ifndef NRF_DFU_SAVE_PROGRESS_IN_FLASH
+#define NRF_DFU_SAVE_PROGRESS_IN_FLASH 1
+#endif
+
+// <q> NRF_DFU_SUPPORTS_EXTERNAL_APP  - [Experimental] Support for external app.
+
+
+// <i> External apps are apps that will not be activated. They can
+// <i> e.g. be apps to be sent to a third party. External app updates
+// <i> are verified upon reception, but will remain in bank 1, and
+// <i> will never be booted. An external app will be overwritten if
+// <i> a new DFU procedure is performed. Note: This functionality is
+// <i> experimental and not yet used in any examples.
+
+#ifndef NRF_DFU_SUPPORTS_EXTERNAL_APP
+#define NRF_DFU_SUPPORTS_EXTERNAL_APP 0
+#endif
+
+// </h>
+//==========================================================
+
+// </h>
+//==========================================================
+
+// </h>
+//==========================================================
+
 // <h> nRF_Drivers
 
 //==========================================================
@@ -1436,6 +2516,76 @@
 // </h>
 //==========================================================
 
+// <h> nRF_IoT
+
+//==========================================================
+// <h> background_dfu - Background DFU library.
+
+//==========================================================
+// <o> BACKGROUND_DFU_DEFAULT_BLOCK_SIZE - Block size used by background DFU.  <1-4096>
+
+
+#ifndef BACKGROUND_DFU_DEFAULT_BLOCK_SIZE
+#define BACKGROUND_DFU_DEFAULT_BLOCK_SIZE 64
+#endif
+
+// <o> BACKGROUND_DFU_BLOCKS_PER_BUFFER - Maximum number of blocks that can be kept in RAM during DFU.  <1-4096>
+
+
+#ifndef BACKGROUND_DFU_BLOCKS_PER_BUFFER
+#define BACKGROUND_DFU_BLOCKS_PER_BUFFER 64
+#endif
+
+// <o> BACKGROUND_DFU_CONFIG_LOG_LEVEL  - Default Severity level
+
+// <0=> Off
+// <1=> Error
+// <2=> Warning
+// <3=> Info
+// <4=> Debug
+
+#ifndef BACKGROUND_DFU_CONFIG_LOG_LEVEL
+#define BACKGROUND_DFU_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> BACKGROUND_DFU_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+
+// <0=> Default
+// <1=> Black
+// <2=> Red
+// <3=> Green
+// <4=> Yellow
+// <5=> Blue
+// <6=> Magenta
+// <7=> Cyan
+// <8=> White
+
+#ifndef BACKGROUND_DFU_CONFIG_INFO_COLOR
+#define BACKGROUND_DFU_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> BACKGROUND_DFU_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+
+// <0=> Default
+// <1=> Black
+// <2=> Red
+// <3=> Green
+// <4=> Yellow
+// <5=> Blue
+// <6=> Magenta
+// <7=> Cyan
+// <8=> White
+
+#ifndef BACKGROUND_DFU_CONFIG_DEBUG_COLOR
+#define BACKGROUND_DFU_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </h>
+//==========================================================
+
+// </h>
+//==========================================================
+
 // <h> nRF_Libraries
 
 //==========================================================
@@ -1566,6 +2716,176 @@
 
 // </h>
 //==========================================================
+
+// </e>
+
+// <q> CRC32_ENABLED  - crc32 - CRC32 calculation routines
+
+
+#ifndef CRC32_ENABLED
+#define CRC32_ENABLED 1
+#endif
+
+// <e> MEM_MANAGER_ENABLED - mem_manager - Dynamic memory allocator
+//==========================================================
+#ifndef MEM_MANAGER_ENABLED
+#define MEM_MANAGER_ENABLED 1
+#endif
+// <o> MEMORY_MANAGER_SMALL_BLOCK_COUNT - Size of each memory blocks identified as 'small' block.  <0-255>
+
+
+#ifndef MEMORY_MANAGER_SMALL_BLOCK_COUNT
+#define MEMORY_MANAGER_SMALL_BLOCK_COUNT 1
+#endif
+
+// <o> MEMORY_MANAGER_SMALL_BLOCK_SIZE -  Size of each memory blocks identified as 'small' block.
+// <i>  Size of each memory blocks identified as 'small' block. Memory block are recommended to be word-sized.
+
+#ifndef MEMORY_MANAGER_SMALL_BLOCK_SIZE
+#define MEMORY_MANAGER_SMALL_BLOCK_SIZE 32
+#endif
+
+// <o> MEMORY_MANAGER_MEDIUM_BLOCK_COUNT - Size of each memory blocks identified as 'medium' block.  <0-255>
+
+
+#ifndef MEMORY_MANAGER_MEDIUM_BLOCK_COUNT
+#define MEMORY_MANAGER_MEDIUM_BLOCK_COUNT 0
+#endif
+
+// <o> MEMORY_MANAGER_MEDIUM_BLOCK_SIZE -  Size of each memory blocks identified as 'medium' block.
+// <i>  Size of each memory blocks identified as 'medium' block. Memory block are recommended to be word-sized.
+
+#ifndef MEMORY_MANAGER_MEDIUM_BLOCK_SIZE
+#define MEMORY_MANAGER_MEDIUM_BLOCK_SIZE 256
+#endif
+
+// <o> MEMORY_MANAGER_LARGE_BLOCK_COUNT - Size of each memory blocks identified as 'large' block.  <0-255>
+
+
+#ifndef MEMORY_MANAGER_LARGE_BLOCK_COUNT
+#define MEMORY_MANAGER_LARGE_BLOCK_COUNT 0
+#endif
+
+// <o> MEMORY_MANAGER_LARGE_BLOCK_SIZE -  Size of each memory blocks identified as 'large' block.
+// <i>  Size of each memory blocks identified as 'large' block. Memory block are recommended to be word-sized.
+
+#ifndef MEMORY_MANAGER_LARGE_BLOCK_SIZE
+#define MEMORY_MANAGER_LARGE_BLOCK_SIZE 256
+#endif
+
+// <o> MEMORY_MANAGER_XLARGE_BLOCK_COUNT - Size of each memory blocks identified as 'extra large' block.  <0-255>
+
+
+#ifndef MEMORY_MANAGER_XLARGE_BLOCK_COUNT
+#define MEMORY_MANAGER_XLARGE_BLOCK_COUNT 0
+#endif
+
+// <o> MEMORY_MANAGER_XLARGE_BLOCK_SIZE -  Size of each memory blocks identified as 'extra large' block.
+// <i>  Size of each memory blocks identified as 'extra large' block. Memory block are recommended to be word-sized.
+
+#ifndef MEMORY_MANAGER_XLARGE_BLOCK_SIZE
+#define MEMORY_MANAGER_XLARGE_BLOCK_SIZE 1320
+#endif
+
+// <o> MEMORY_MANAGER_XXLARGE_BLOCK_COUNT - Size of each memory blocks identified as 'extra extra large' block.  <0-255>
+
+
+#ifndef MEMORY_MANAGER_XXLARGE_BLOCK_COUNT
+#define MEMORY_MANAGER_XXLARGE_BLOCK_COUNT 0
+#endif
+
+// <o> MEMORY_MANAGER_XXLARGE_BLOCK_SIZE -  Size of each memory blocks identified as 'extra extra large' block.
+// <i>  Size of each memory blocks identified as 'extra extra large' block. Memory block are recommended to be word-sized.
+
+#ifndef MEMORY_MANAGER_XXLARGE_BLOCK_SIZE
+#define MEMORY_MANAGER_XXLARGE_BLOCK_SIZE 3444
+#endif
+
+// <o> MEMORY_MANAGER_XSMALL_BLOCK_COUNT - Size of each memory blocks identified as 'extra small' block.  <0-255>
+
+
+#ifndef MEMORY_MANAGER_XSMALL_BLOCK_COUNT
+#define MEMORY_MANAGER_XSMALL_BLOCK_COUNT 0
+#endif
+
+// <o> MEMORY_MANAGER_XSMALL_BLOCK_SIZE -  Size of each memory blocks identified as 'extra small' block.
+// <i>  Size of each memory blocks identified as 'extra large' block. Memory block are recommended to be word-sized.
+
+#ifndef MEMORY_MANAGER_XSMALL_BLOCK_SIZE
+#define MEMORY_MANAGER_XSMALL_BLOCK_SIZE 64
+#endif
+
+// <o> MEMORY_MANAGER_XXSMALL_BLOCK_COUNT - Size of each memory blocks identified as 'extra extra small' block.  <0-255>
+
+
+#ifndef MEMORY_MANAGER_XXSMALL_BLOCK_COUNT
+#define MEMORY_MANAGER_XXSMALL_BLOCK_COUNT 0
+#endif
+
+// <o> MEMORY_MANAGER_XXSMALL_BLOCK_SIZE -  Size of each memory blocks identified as 'extra extra small' block.
+// <i>  Size of each memory blocks identified as 'extra extra small' block. Memory block are recommended to be word-sized.
+
+#ifndef MEMORY_MANAGER_XXSMALL_BLOCK_SIZE
+#define MEMORY_MANAGER_XXSMALL_BLOCK_SIZE 32
+#endif
+
+// <e> MEM_MANAGER_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef MEM_MANAGER_CONFIG_LOG_ENABLED
+#define MEM_MANAGER_CONFIG_LOG_ENABLED 0
+#endif
+// <o> MEM_MANAGER_CONFIG_LOG_LEVEL  - Default Severity level
+
+// <0=> Off
+// <1=> Error
+// <2=> Warning
+// <3=> Info
+// <4=> Debug
+
+#ifndef MEM_MANAGER_CONFIG_LOG_LEVEL
+#define MEM_MANAGER_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> MEM_MANAGER_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+
+// <0=> Default
+// <1=> Black
+// <2=> Red
+// <3=> Green
+// <4=> Yellow
+// <5=> Blue
+// <6=> Magenta
+// <7=> Cyan
+// <8=> White
+
+#ifndef MEM_MANAGER_CONFIG_INFO_COLOR
+#define MEM_MANAGER_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> MEM_MANAGER_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+
+// <0=> Default
+// <1=> Black
+// <2=> Red
+// <3=> Green
+// <4=> Yellow
+// <5=> Blue
+// <6=> Magenta
+// <7=> Cyan
+// <8=> White
+
+#ifndef MEM_MANAGER_CONFIG_DEBUG_COLOR
+#define MEM_MANAGER_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// <q> MEM_MANAGER_DISABLE_API_PARAM_CHECK  - Disable API parameter checks in the module.
+
+
+#ifndef MEM_MANAGER_DISABLE_API_PARAM_CHECK
+#define MEM_MANAGER_DISABLE_API_PARAM_CHECK 0
+#endif
 
 // </e>
 
