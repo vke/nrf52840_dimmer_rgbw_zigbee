@@ -1,7 +1,7 @@
 @rem write mbr for ota client:
 @rem nrfjprog -f nrf52 -r --program ..\..\..\..\..\components\softdevice\mbr\hex\mbr_nrf52_2.4.1_mbr.hex --chiperase
 
-@rem write bootloader for ota client combiled by armgcc:
+@rem write bootloader for ota client compiled by armgcc:
 @rem nrfjprog -f nrf52 -r --program ..\..\..\ota\bootloader\pca10059\mbr\armgcc\_build\nrf52840_xxaa_mbr.hex
 
 @rem build and merge settings and firmware for ota client:
