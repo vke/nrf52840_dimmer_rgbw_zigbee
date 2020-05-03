@@ -118,6 +118,7 @@
       <file file_name="../../../../../../../modules/nrfx/drivers/src/prs/nrfx_prs.c" />
       <file file_name="../../../../../../../modules/nrfx/drivers/src/nrfx_pwm.c" />
       <file file_name="../../../../../../../modules/nrfx/drivers/src/nrfx_rng.c" />
+      <file file_name="../../../../../../../modules/nrfx/drivers/src/nrfx_saadc.c" />
       <file file_name="../../../../../../../modules/nrfx/drivers/src/nrfx_systick.c" />
       <file file_name="../../../../../../../modules/nrfx/drivers/src/nrfx_timer.c" />
       <file file_name="../../../../../../../modules/nrfx/drivers/src/nrfx_uart.c" />
@@ -140,8 +141,15 @@
       <file file_name="../../../../../../dfu/dfu_public_key.c" />
       <file file_name="../../../main.c" />
       <file file_name="../config/sdk_config.h" />
-      <file file_name="../../../ota_upgrade_client.h" />
       <file file_name="../config/efekta_mini_dev_board.h" />
+      <file file_name="../../../ep_dimmer_control.h" />
+      <file file_name="../../../zb_zcl_device_temperature.h" />
+      <file file_name="../../../zb_zcl_device_temperature.c" />
+      <file file_name="../../../ep_dimmable_light.h" />
+      <file file_name="../../../multi_ep_fixer.c" />
+      <file file_name="../../../multi_ep_fixer.h" />
+      <file file_name="../../../zb_zcl_electrical_measurement.h" />
+      <file file_name="../../../zb_zcl_power_config.h" />
     </folder>
     <folder Name="nRF_IoT">
       <file file_name="../../../../../../../components/iot/background_dfu/background_dfu_block.c" />

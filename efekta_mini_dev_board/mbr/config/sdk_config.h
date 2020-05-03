@@ -87,7 +87,7 @@
 // <i> Trace level of Zigbee stack binary logs. Possible values: 0 - disable, 1 - error, 2 - warning, 3 - info, 4 - debug. Disabled by default.
 
 #ifndef ZIGBEE_TRACE_LEVEL
-#define ZIGBEE_TRACE_LEVEL 0
+#define ZIGBEE_TRACE_LEVEL 4
 #endif
 
 // <o> ZIGBEE_TRACE_MASK - Trace mask of Zigbee stack logs.  <0-2376>
@@ -96,7 +96,7 @@
 // <i> Selectively enable Zigbee binary trace logs. Possible values (logical or): TRACE_SUBSYSTEM_ZCL, TRACE_SUBSYSTEM_ZDO, TRACE_SUBSYSTEM_NWK. Defaults to 0x0000.
 
 #ifndef ZIGBEE_TRACE_MASK
-#define ZIGBEE_TRACE_MASK 0
+#define ZIGBEE_TRACE_MASK (0)
 #endif
 
 // <o> ZIGBEE_TIMER_INSTANCE_NO - nRF timer instance used by Zigbee stack
@@ -1825,6 +1825,114 @@
 
 // </e>
 
+// <e> NRFX_SAADC_ENABLED - nrfx_saadc - SAADC peripheral driver
+//==========================================================
+#ifndef NRFX_SAADC_ENABLED
+#define NRFX_SAADC_ENABLED 1
+#endif
+// <o> NRFX_SAADC_CONFIG_RESOLUTION  - Resolution
+
+// <0=> 8 bit
+// <1=> 10 bit
+// <2=> 12 bit
+// <3=> 14 bit
+
+#ifndef NRFX_SAADC_CONFIG_RESOLUTION
+#define NRFX_SAADC_CONFIG_RESOLUTION 3
+#endif
+
+// <o> NRFX_SAADC_CONFIG_OVERSAMPLE  - Sample period
+
+// <0=> Disabled
+// <1=> 2x
+// <2=> 4x
+// <3=> 8x
+// <4=> 16x
+// <5=> 32x
+// <6=> 64x
+// <7=> 128x
+// <8=> 256x
+
+#ifndef NRFX_SAADC_CONFIG_OVERSAMPLE
+#define NRFX_SAADC_CONFIG_OVERSAMPLE 0
+#endif
+
+// <q> NRFX_SAADC_CONFIG_LP_MODE  - Enabling low power mode
+
+
+#ifndef NRFX_SAADC_CONFIG_LP_MODE
+#define NRFX_SAADC_CONFIG_LP_MODE 0
+#endif
+
+// <o> NRFX_SAADC_CONFIG_IRQ_PRIORITY  - Interrupt priority
+
+// <0=> 0 (highest)
+// <1=> 1
+// <2=> 2
+// <3=> 3
+// <4=> 4
+// <5=> 5
+// <6=> 6
+// <7=> 7
+
+#ifndef NRFX_SAADC_CONFIG_IRQ_PRIORITY
+#define NRFX_SAADC_CONFIG_IRQ_PRIORITY 6
+#endif
+
+// <e> NRFX_SAADC_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef NRFX_SAADC_CONFIG_LOG_ENABLED
+#define NRFX_SAADC_CONFIG_LOG_ENABLED 0
+#endif
+// <o> NRFX_SAADC_CONFIG_LOG_LEVEL  - Default Severity level
+
+// <0=> Off
+// <1=> Error
+// <2=> Warning
+// <3=> Info
+// <4=> Debug
+
+#ifndef NRFX_SAADC_CONFIG_LOG_LEVEL
+#define NRFX_SAADC_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> NRFX_SAADC_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+
+// <0=> Default
+// <1=> Black
+// <2=> Red
+// <3=> Green
+// <4=> Yellow
+// <5=> Blue
+// <6=> Magenta
+// <7=> Cyan
+// <8=> White
+
+#ifndef NRFX_SAADC_CONFIG_INFO_COLOR
+#define NRFX_SAADC_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> NRFX_SAADC_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+
+// <0=> Default
+// <1=> Black
+// <2=> Red
+// <3=> Green
+// <4=> Yellow
+// <5=> Blue
+// <6=> Magenta
+// <7=> Cyan
+// <8=> White
+
+#ifndef NRFX_SAADC_CONFIG_DEBUG_COLOR
+#define NRFX_SAADC_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// </e>
+
+
 // <q> NRFX_SYSTICK_ENABLED  - nrfx_systick - ARM(R) SysTick driver
 
 
@@ -3201,7 +3309,7 @@
 
 
 #ifndef NRF_FPRINTF_FLAG_AUTOMATIC_CR_ON_LF_ENABLED
-#define NRF_FPRINTF_FLAG_AUTOMATIC_CR_ON_LF_ENABLED 1
+#define NRF_FPRINTF_FLAG_AUTOMATIC_CR_ON_LF_ENABLED 0
 #endif
 
 // <q> NRF_FPRINTF_DOUBLE_ENABLED  - Enable IEEE-754 double precision formatting.
@@ -3223,7 +3331,7 @@
 // <e> NRF_LOG_BACKEND_RTT_ENABLED - nrf_log_backend_rtt - Log RTT backend
 //==========================================================
 #ifndef NRF_LOG_BACKEND_RTT_ENABLED
-#define NRF_LOG_BACKEND_RTT_ENABLED 0
+#define NRF_LOG_BACKEND_RTT_ENABLED 1
 #endif
 // <o> NRF_LOG_BACKEND_RTT_TEMP_BUFFER_SIZE - Size of buffer for partially processed strings.
 // <i> Size of the buffer is a trade-off between RAM usage and processing.

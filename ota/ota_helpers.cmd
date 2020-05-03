@@ -12,7 +12,7 @@
 @rem nrfjprog -f nrf52 -r --program dfu_client.hex --sectorerase
 
 @rem prepare ota firmware update package for ota server:
-@rem nrfutil pkg generate --hw-version 52 --sd-req 0x00 --application-version 0x01030101 --application ..\efekta_mini_dev_board\mbr\ses\Output\Release\Exe\nrf52840_dimmer_rgbw_mbr.hex --key-file priv.pem --app-boot-validation VALIDATE_ECDSA_P256_SHA256 app_dfu_package.zip --zigbee True --zigbee-manufacturer-id 123 --zigbee-image-type 321 --zigbee-comment good_image --zigbee-ota-hw-version 52 --zigbee-ota-fw-version 0x01030101
+@rem nrfutil pkg generate --hw-version 52 --sd-req 0x00 --application-version 0x01070101 --application ..\efekta_mini_dev_board\mbr\ses\Output\Release\Exe\nrf52840_dimmer_rgbw_mbr.hex --key-file priv.pem --app-boot-validation VALIDATE_ECDSA_P256_SHA256 app_dfu_package.zip --zigbee True --zigbee-manufacturer-id 123 --zigbee-image-type 321 --zigbee-comment good_image --zigbee-ota-hw-version 52 --zigbee-ota-fw-version 0x01070101
 
 @rem write ota server + firmware update:
-@rem nrfutil dfu zigbee -f 007B-0141-01030101-good_image.zigbee -snr 583648125 -chan 16
+@rem nrfutil dfu zigbee -f 007B-0141-01040101-good_image.zigbee -snr 583648125 -chan 16
