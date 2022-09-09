@@ -9,7 +9,7 @@ extern "C" {
 
 // LED definitions for EFEKTA_DEV_BOARD_H
 // Each LED color is considered a separate LED
-#define LEDS_NUMBER    4
+#define LEDS_NUMBER    8
 
 #define LED1_B         NRF_GPIO_PIN_MAP(0,6)
 #define LED2_R         NRF_GPIO_PIN_MAP(0,8)

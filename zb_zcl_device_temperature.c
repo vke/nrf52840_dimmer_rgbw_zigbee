@@ -99,7 +99,7 @@ static zb_ret_t check_value_device_temperature(zb_uint16_t attr_id, zb_uint8_t e
  * @param [in] attr_id Attribute ID
  * @param [in] new_value Pointer to the new value of the attribute
  */
-static zb_void_t zb_zcl_device_temperature_write_attr_hook(zb_uint8_t endpoint, zb_uint16_t attr_id, zb_uint8_t *new_value)
+static void zb_zcl_device_temperature_write_attr_hook(zb_uint8_t endpoint, zb_uint16_t attr_id, zb_uint8_t *new_value)
 {
     UNUSED_PARAMETER(new_value);
 
@@ -111,7 +111,7 @@ static zb_void_t zb_zcl_device_temperature_write_attr_hook(zb_uint8_t endpoint, 
     }
 }
 
-zb_void_t zb_zcl_device_temperature_init_server()
+void zb_zcl_device_temperature_init_server()
 {
     zb_ret_t ret = zb_zcl_add_cluster_handlers(ZB_ZCL_CLUSTER_ID_DEVICE_TEMP_CONFIG,
                                                ZB_ZCL_CLUSTER_SERVER_ROLE,
@@ -121,7 +121,7 @@ zb_void_t zb_zcl_device_temperature_init_server()
     ASSERT(ret == RET_OK);
 }
 
-zb_void_t zb_zcl_device_temperature_init_client()
+void zb_zcl_device_temperature_init_client()
 {
     zb_ret_t ret = zb_zcl_add_cluster_handlers(ZB_ZCL_CLUSTER_ID_DEVICE_TEMP_CONFIG,
                                                ZB_ZCL_CLUSTER_CLIENT_ROLE,

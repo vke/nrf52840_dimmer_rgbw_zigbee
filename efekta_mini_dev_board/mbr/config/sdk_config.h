@@ -135,6 +135,11 @@
 #define ZIGBEE_VENDOR_OUI 16043574
 #endif
 
+// <o> ZIGBEE_RX_QUEUE_LENGTH - The length of the queue that stores received IEEE 802.15.4 frames. This value should be greater than NRF_802154_RX_BUFFERS. 
+#ifndef ZIGBEE_RX_QUEUE_LENGTH
+#define ZIGBEE_RX_QUEUE_LENGTH 17
+#endif
+
 // </h>
 //==========================================================
 

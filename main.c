@@ -51,8 +51,10 @@
 #include "nrf_dfu_settings.h"
 
 #include "zboss_api_af_addons.h"
+#include "zb_zcl_ota_upgrade_addons.h"
 
 #include "app_timer.h"
+#include "app_scheduler.h"
 #include "boards.h"
 #include "bsp.h"
 #include "nrf_drv_pwm.h"
@@ -88,11 +90,11 @@
 #define BULB_INIT_BASIC_HW_VERSION    11                                  /**< Version of the hardware of the device (1 byte). */
 #define BULB_INIT_BASIC_MANUF_NAME    "vke"                               /**< Manufacturer name (32 bytes). */
 #define BULB_INIT_BASIC_MODEL_ID      "RGBW Dimmer 1.2"                   /**< Model number assigned by manufacturer (32-bytes long string). */
-#define BULB_INIT_BASIC_DATE_CODE     "20200503"                          /**< First 8 bytes specify the date of manufacturer of the device in ISO 8601 format (YYYYMMDD). The rest (8 bytes) are manufacturer specific. */
+#define BULB_INIT_BASIC_DATE_CODE     "20220909"                          /**< First 8 bytes specify the date of manufacturer of the device in ISO 8601 format (YYYYMMDD). The rest (8 bytes) are manufacturer specific. */
 #define BULB_INIT_BASIC_POWER_SOURCE  ZB_ZCL_BASIC_POWER_SOURCE_DC_SOURCE /**< Type of power sources available for the device. For possible values see section 3.2.2.2.8 of ZCL specification. */
 #define BULB_INIT_BASIC_LOCATION_DESC ""                                  /**< Describes the physical location of the device (16 bytes). May be modified during commisioning process. */
 #define BULB_INIT_BASIC_PH_ENV        ZB_ZCL_BASIC_ENV_UNSPECIFIED        /**< Describes the type of physical environment. For possible values see section 3.2.2.2.10 of ZCL specification. */
-#define BULB_INIT_BASIC_SW_VER        "1.2.0.7"
+#define BULB_INIT_BASIC_SW_VER        "1.2.1.0"
 
 #define IDENTIFY_MODE_BSP_EVT         BSP_EVENT_KEY_0    //
 #define ZIGBEE_NETWORK_STATE_LED      BSP_BOARD_LED_0    //
@@ -137,6 +139,8 @@
 #define DIMMER_CHANNEL_PIN_W          LED2_DW // pwm channel 3
 #define DIMMER_PWM_INVERSION          0 // NRF_DRV_PWM_PIN_INVERTED
 #endif // DIMMER_EFEKTA_BOARD_DBG
+
+void fill_basic_attrs(zb_zcl_basic_attrs_ext_t *p_basic_attrs_ext);
 
 APP_TIMER_DEF(m_battery_timer_id); /**< Battery measurement timer. */
 APP_TIMER_DEF(m_internal_temperature_timer_id); /**< Internal temperature measurement timer. */
@@ -747,7 +751,7 @@ void zb_dimmable_light_init_ctx(bulb_device_ctx_t *p_dimmable_light_ctx, uint8_t
     level_control_set_value(p_dimmable_light_ctx, p_dimmable_light_ctx->level_control_attr.current_level);
 }
 
-zb_void_t zb_osif_go_idle(zb_void_t)
+void zb_osif_go_idle(void)
 {
     zb_osif_wait_for_event();
 }
@@ -784,7 +788,7 @@ zb_ret_t zb_dimmer_light_set_attribute(bulb_device_ctx_t *p_dimmable_light_ctx, 
     return ret;
 }
 
-static zb_void_t zcl_device_cb(zb_bufid_t bufid)
+static void zcl_device_cb(zb_bufid_t bufid)
 {
     zb_uint8_t cluster_id;
     zb_uint8_t attr_id;
@@ -892,7 +896,7 @@ static zb_void_t zcl_device_cb(zb_bufid_t bufid)
         }
 
     default:
-        p_device_cb_param->status = RET_ERROR;
+        p_device_cb_param->status = RET_NOT_IMPLEMENTED;
         break;
     }
 
@@ -920,7 +924,7 @@ void zboss_signal_handler(zb_bufid_t bufid)
         }
         break;
     case ZB_COMMON_SIGNAL_CAN_SLEEP:
-        NRF_LOG_INFO("ZB_COMMON_SIGNAL_CAN_SLEEP: %d", status);
+//        NRF_LOG_INFO("ZB_COMMON_SIGNAL_CAN_SLEEP: %d", status);
         break;
     case ZB_ZDO_SIGNAL_PRODUCTION_CONFIG_READY:
         NRF_LOG_INFO("ZB_ZDO_SIGNAL_PRODUCTION_CONFIG_READY: %d", status);
@@ -1073,8 +1077,6 @@ int main(void)
     ZB_AF_REGISTER_DEVICE_CTX(&dimmable_light_ctx);
 
     ZB_ZCL_REGISTER_DEVICE_CB(zcl_device_cb);
-
-    init_multi_ep_fixers();
 
     // FIXME: commented out due to init_multi_ep_fixers() call
 //    ZB_AF_SET_ENDPOINT_HANDLER(HA_DIMMABLE_LIGHT_ENDPOINT_R, zcl_ep_handler);

@@ -55,7 +55,6 @@
             {                                                                                        \
                 ZB_ZCL_CLUSTER_ID_BASIC,                                                             \
                 ZB_ZCL_CLUSTER_ID_IDENTIFY,                                                          \
-                ZB_ZCL_CLUSTER_ID_SCENES,                                                            \
                 ZB_ZCL_CLUSTER_ID_GROUPS,                                                            \
                 ZB_ZCL_CLUSTER_ID_ON_OFF,                                                            \
                 ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL,                                                     \
@@ -125,7 +124,6 @@
         dev_ctx_name##_basic_attr_list,                                                          \
         dev_ctx_name##_identify_attr_list,                                                       \
         dev_ctx_name##_groups_attr_list,                                                         \
-        dev_ctx_name##_scenes_attr_list,                                                         \
         dev_ctx_name##_on_off_attr_list,                                                         \
         dev_ctx_name##_level_control_attr_list);
 

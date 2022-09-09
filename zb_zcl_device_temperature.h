@@ -31,7 +31,7 @@ enum zb_zcl_device_temperature_attr_e
         ZB_ZCL_ATTR_DEVICE_TEMPERATURE_CURRENT_TEMPERATURE_ID,                                 \
             ZB_ZCL_ATTR_TYPE_S16,                                                              \
             ZB_ZCL_ATTR_ACCESS_READ_ONLY | ZB_ZCL_ATTR_ACCESS_REPORTING,                       \
-            (zb_voidp_t)data_ptr                                                               \
+            (void *)data_ptr                                                               \
     }
 
 #define ZB_SET_ATTR_DESCR_WITH_ZB_ZCL_ATTR_DEVICE_TEMPERATURE_MIN_TEMP_EXPERIENCED_ID(data_ptr) \
@@ -39,7 +39,7 @@ enum zb_zcl_device_temperature_attr_e
         ZB_ZCL_ATTR_DEVICE_TEMPERATURE_MIN_TEMP_EXPERIENCED_ID,                                 \
             ZB_ZCL_ATTR_TYPE_S16,                                                               \
             ZB_ZCL_ATTR_ACCESS_READ_ONLY | ZB_ZCL_ATTR_ACCESS_REPORTING,                        \
-            (zb_voidp_t)data_ptr                                                                \
+            (void *)data_ptr                                                                \
     }
 
 #define ZB_SET_ATTR_DESCR_WITH_ZB_ZCL_ATTR_DEVICE_TEMPERATURE_MAX_TEMP_EXPERIENCED_ID(data_ptr) \
@@ -47,7 +47,7 @@ enum zb_zcl_device_temperature_attr_e
         ZB_ZCL_ATTR_DEVICE_TEMPERATURE_MAX_TEMP_EXPERIENCED_ID,                                 \
             ZB_ZCL_ATTR_TYPE_S16,                                                               \
             ZB_ZCL_ATTR_ACCESS_READ_ONLY | ZB_ZCL_ATTR_ACCESS_REPORTING,                        \
-            (zb_voidp_t)data_ptr                                                                \
+            (void *)data_ptr                                                                \
     }
 
 #define ZB_SET_ATTR_DESCR_WITH_ZB_ZCL_ATTR_DEVICE_TEMPERATURE_OVER_TEMP_TOTAL_DWELL_ID(data_ptr) \
@@ -55,7 +55,7 @@ enum zb_zcl_device_temperature_attr_e
         ZB_ZCL_ATTR_DEVICE_TEMPERATURE_OVER_TEMP_TOTAL_DWELL_ID,                                 \
             ZB_ZCL_ATTR_TYPE_U16,                                                                \
             ZB_ZCL_ATTR_ACCESS_READ_ONLY | ZB_ZCL_ATTR_ACCESS_REPORTING,                         \
-            (zb_voidp_t)data_ptr                                                                 \
+            (void *)data_ptr                                                                 \
     }
 
 typedef struct zb_zcl_device_temperature_attrs_s
