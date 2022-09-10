@@ -94,7 +94,7 @@
 #define BULB_INIT_BASIC_POWER_SOURCE  ZB_ZCL_BASIC_POWER_SOURCE_DC_SOURCE /**< Type of power sources available for the device. For possible values see section 3.2.2.2.8 of ZCL specification. */
 #define BULB_INIT_BASIC_LOCATION_DESC ""                                  /**< Describes the physical location of the device (16 bytes). May be modified during commisioning process. */
 #define BULB_INIT_BASIC_PH_ENV        ZB_ZCL_BASIC_ENV_UNSPECIFIED        /**< Describes the type of physical environment. For possible values see section 3.2.2.2.10 of ZCL specification. */
-#define BULB_INIT_BASIC_SW_VER        "1.2.1.0"
+#define BULB_INIT_BASIC_SW_VER        "1.2.1.1"
 
 #define IDENTIFY_MODE_BSP_EVT         BSP_EVENT_KEY_0    //
 #define ZIGBEE_NETWORK_STATE_LED      BSP_BOARD_LED_0    //
